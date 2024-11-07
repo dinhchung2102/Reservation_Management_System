@@ -250,7 +250,7 @@ public class FormManHinhChinh extends JFrame implements ActionListener {
 		Color backgroundColor = Color.white;
 
 		// ==================== PANEL TẠO SƠ ĐỒ BÀN ===================
-		tablePanel.setLayout(new GridLayout(2, 4));
+		tablePanel.setLayout(new GridLayout(2, 3));
 		tablePanel.setBorder(new EmptyBorder(20, 20, 10, 20));
 
 		// ================= PANEL ĐIỀU HƯỚNG KHU VỰC ==================

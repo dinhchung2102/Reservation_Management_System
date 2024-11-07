@@ -53,6 +53,7 @@ GO
 CREATE TABLE MonAn (
     maMon INT IDENTITY(1,1) PRIMARY KEY,
     tenMon NVARCHAR(20),
+    loai NVARCHAR(20),
     giaTien FLOAT,
     moTa NVARCHAR(50)
 );
@@ -62,12 +63,9 @@ CREATE TABLE PhieuDatBan (
     maPhieuDatBan INT IDENTITY(1,1) PRIMARY KEY,
     ngayTaoPhieu DATETIME,
     thoiGianDatBan DATETIME,
-<<<<<<< HEAD
     soLuongKhach INT,
     tienCoc FLOAT,
     trangThai NVARCHAR(50),
-=======
->>>>>>> 5cf44e98c76b3a7466bf2f40d01d1bdd637eb43d
     maKH INT FOREIGN KEY REFERENCES KhachHang(maKH) ON DELETE SET NULL,
     maNV INT FOREIGN KEY REFERENCES NhanVien(maNV) ON DELETE SET NULL,
     maBan INT FOREIGN KEY REFERENCES Ban(maBan) ON DELETE SET NULL
@@ -77,10 +75,6 @@ GO
 CREATE TABLE ChiTietPhieuDatBan (
     donGia FLOAT,
     soLuong INT,
-<<<<<<< HEAD
-=======
-	tienCoc float,
->>>>>>> 5cf44e98c76b3a7466bf2f40d01d1bdd637eb43d
     thanhTien FLOAT,
     maMon INT FOREIGN KEY REFERENCES MonAn(maMon),
     maPhieuDatBan INT FOREIGN KEY REFERENCES PhieuDatBan(maPhieuDatBan) ON DELETE CASCADE,

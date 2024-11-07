@@ -13,24 +13,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
@@ -442,22 +425,6 @@ public class FormDatBan extends JFrame {
 			txtEmail.setEditable(false);
 
 		});
-
-		// =====================MÃ KHÁCH HÀNG================================
-//		JPanel pnlMaKH = new JPanel();
-//		pnlMaKH.setLayout(new BoxLayout(pnlMaKH, BoxLayout.X_AXIS));
-//
-//		JLabel lblMaKH = new JLabel("MÃ KHÁCH HÀNG: ");
-//		lblMaKH.setFont(txtFieldFont);
-//		JTextField txtMaKH = new JTextField();
-//		txtMaKH.setFont(txtFieldFont);
-//		txtMaKH.setEditable(false);
-//		txtMaKH.setBackground(whiteColor);
-//
-//		pnlMaKH.add(lblMaKH);
-//		
-//		pnlMaKH.add(txtMaKH);
-
 		// =====================HỌ TÊN KHÁCH HÀNG============================
 
 		pnlTenKH = new JPanel();
@@ -573,18 +540,6 @@ public class FormDatBan extends JFrame {
 		JLabel lblNhanVien = new JLabel("NHÂN VIÊN: ");
 		lblNhanVien.setFont(txtFieldFont);
 
-//		JComboBox<String> comboBoxNhanVien = new JComboBox<String>();
-//		comboBoxNhanVien.setFont(txtFieldFont);
-//		comboBoxNhanVien.setBackground(whiteColor);
-//		
-//		ArrayList<NhanVien> nVienList = new ArrayList<NhanVien>();
-//		nVienList = new NhanVien_DAO().getAllNhanVien();
-//		
-//		for(NhanVien nVien: nVienList) {
-//			comboBoxNhanVien.addItem(nVien.getTenNV());
-//		}
-//		
-
 		txtNhanVien = new JTextField();
 		txtNhanVien.setText(nhanVien.getTenNV());
 		txtNhanVien.setFont(txtFieldFont);
@@ -594,7 +549,6 @@ public class FormDatBan extends JFrame {
 		pnlNhanVien.add(lblNhanVien);
 		pnlNhanVien.add(Box.createHorizontalStrut(14));
 		pnlNhanVien.add(txtNhanVien);
-		// pnlNhanVien.add(txtNhanVien);
 		// ===========================SỬ DỤNG ĐẶT BÀN===============================
 		pnlSDDatBan = new JPanel();
 		pnlSDDatBan.setLayout(new BoxLayout(pnlSDDatBan, BoxLayout.X_AXIS));
@@ -842,6 +796,10 @@ public class FormDatBan extends JFrame {
 		table.setForeground(Color.red); // Màu chữ
 		table.setFont(txtFieldFont);
 		table.setRowHeight(30);
+		table.setDefaultEditor(Object.class, null);
+		table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+
+
 
 		JTableHeader header = table.getTableHeader();
 		header.setFont(new Font("Montserrat", Font.BOLD, 16)); // Font cho tiêu đề
@@ -996,22 +954,30 @@ public class FormDatBan extends JFrame {
 
 		});
 		btnThemMon.addActionListener(e -> {
-			int selectedRow = table.getSelectedRow();
-			if (selectedRow != -1) {
-				// Lấy thông tin món ăn đã chọn
-				Object maMon = model.getValueAt(selectedRow, 0); // STT
-				Object tenMon = model.getValueAt(selectedRow, 1); // Tên
-				Object giaTien = model.getValueAt(selectedRow, 2); // Đơn giá
+			// Lấy tất cả các dòng được chọn
+			int[] selectedRows = table.getSelectedRows();
 
-				// Để số lượng mặc định là 1 (hoặc có thể thêm hộp thoại cho phép nhập số lượng)
-				int soLuong = 1;
-				float tienCoc = Float.parseFloat(txtTienCoc.getText());
-				float thanhTien = (float) giaTien * soLuong;
+			// Kiểm tra xem có dòng nào được chọn không
+			if (selectedRows.length > 0) {
+				// Duyệt qua từng dòng được chọn
+				for (int i = 0; i < selectedRows.length; i++) {
+					int row = selectedRows[i]; // Chỉ số dòng hiện tại được chọn
 
-				// Thêm vào bảng món đã đặt
+					// Lấy thông tin món ăn từ các cột trong dòng
+					Object maMon = model.getValueAt(row, 0); // STT
+					Object tenMon = model.getValueAt(row, 1); // Tên
+					Object giaTien = model.getValueAt(row, 2); // Đơn giá
 
-				modelTinhTien.addRow(
-						new Object[] { modelTinhTien.getRowCount() + 1, maMon, tenMon, giaTien, soLuong, thanhTien });
+					// Để số lượng mặc định là 1
+					int soLuong = 1;
+					float tienCoc = Float.parseFloat(txtTienCoc.getText());
+					float thanhTien = (float) giaTien * soLuong;
+
+					// Thêm món ăn vào bảng tính tiền
+					modelTinhTien.addRow(
+							new Object[] { modelTinhTien.getRowCount() + 1, maMon, tenMon, giaTien, soLuong, thanhTien }
+					);
+				}
 
 				// Có thể cập nhật tổng tiền nếu cần
 				// Cập nhật lại tổng tiền ở đây nếu bạn có một ô để hiển thị tổng tiền
@@ -1019,6 +985,7 @@ public class FormDatBan extends JFrame {
 				JOptionPane.showMessageDialog(null, "Vui lòng chọn món ăn để thêm!");
 			}
 		});
+
 
 		btnDatBan.addActionListener(e -> {
 			// Kiểm tra số điện thoại và tên không được để trống
@@ -1039,11 +1006,10 @@ public class FormDatBan extends JFrame {
 
 					if (radioBtnKHMoi.isSelected()) {
 						// Khách hàng mới đặt bàn:
-
 						if (kiemTraNgayDat(dateChooserNgayDen)) {
 							if (themKhachHang(txtTenKH.getText(), txtSDT.getText(), txtEmail.getText(),
 									txtDiaChi.getText())) {
-								int maPhieu = themPhieuDatBan(comboBoxGio, comboBoxPhut, txtSDT.getText(),
+								int maPhieu = themPhieuDatBan(comboBoxGio, comboBoxPhut, txtSDT.getText(), (int) comboBoxSLKhach.getSelectedItem(), Float.parseFloat(txtTienCoc.getText()), "Chưa sử dụng",
 										(int) comboBoxBan.getSelectedItem(), nhanVien, false);
 								// Thêm chi tiết phiếu nữa là OK
 								for (int i = 0; i < modelTinhTien.getRowCount(); i++) {
@@ -1051,11 +1017,10 @@ public class FormDatBan extends JFrame {
 									float donGia = (float) modelTinhTien.getValueAt(i, 3);
 									int soLuong = (int) modelTinhTien.getValueAt(i, 4); // Số lượng
 									float thanhTien = (float) modelTinhTien.getValueAt(i, 5); // Thành tiền
-									Float tienCoc = Float.parseFloat(txtTienCoc.getText());
 
 									ChiTietPhieuDatBan_DAO chiTietPhieuDatBan_DAO = new ChiTietPhieuDatBan_DAO();
 									ChiTietPhieuDatBan chiTietPhieuDatBan = new ChiTietPhieuDatBan(donGia, soLuong,
-											tienCoc, thanhTien, new MonAnDAO().getMonAnTheoMa(maMon),
+											 thanhTien, new MonAnDAO().getMonAnTheoMa(maMon),
 											new PhieuDatBan_DAO().getPhieuDatBanTheoMa(maPhieu));
 
 									chiTietPhieuDatBan_DAO.themChiTietPhieuDatBan(chiTietPhieuDatBan);
@@ -1078,7 +1043,7 @@ public class FormDatBan extends JFrame {
 						// Khách hàng cũ đặt bàn
 						// Thêm phiếu đặt bàn
 						if (kiemTraNgayDat(dateChooserNgayDen)) {
-							int maPhieu = themPhieuDatBan(comboBoxGio, comboBoxPhut, txtSDT.getText(),
+							int maPhieu = themPhieuDatBan(comboBoxGio, comboBoxPhut, txtSDT.getText(), (int) comboBoxSLKhach.getSelectedItem(), Float.parseFloat(txtTienCoc.getText()), "Chưa sử dụng",
 									(int) comboBoxBan.getSelectedItem(), nhanVien, false);
 
 							for (int i = 0; i < modelTinhTien.getRowCount(); i++) {
@@ -1086,10 +1051,9 @@ public class FormDatBan extends JFrame {
 								float donGia = (float) modelTinhTien.getValueAt(i, 3);
 								int soLuong = (int) modelTinhTien.getValueAt(i, 4); // Số lượng
 								float thanhTien = (float) modelTinhTien.getValueAt(i, 5); // Thành tiền
-								Float tienCoc = Float.parseFloat(txtTienCoc.getText());
 
 								ChiTietPhieuDatBan_DAO chiTietPhieuDatBan_DAO = new ChiTietPhieuDatBan_DAO();
-								ChiTietPhieuDatBan chiTietPhieuDatBan = new ChiTietPhieuDatBan(donGia, soLuong, tienCoc,
+								ChiTietPhieuDatBan chiTietPhieuDatBan = new ChiTietPhieuDatBan(donGia, soLuong,
 										thanhTien, new MonAnDAO().getMonAnTheoMa(maMon),
 										new PhieuDatBan_DAO().getPhieuDatBanTheoMa(maPhieu));
 
@@ -1111,70 +1075,16 @@ public class FormDatBan extends JFrame {
 						KhachHang khachHangMoi = new KhachHang(0, txtTenKH.getText(), txtSDT.getText(),
 								txtEmail.getText(), txtDiaChi.getText());
 						dao_KhachHang.addKhachHang(khachHangMoi);
-						// thêm phiếu, thêm chi tiết phiếu
-						int maPhieu = themPhieuDatBan(comboBoxGio, comboBoxPhut, txtSDT.getText(),
-								(int) comboBoxBan.getSelectedItem(), nhanVien, true);
-
-						// Thêm chi tiết phiếu nữa là OK
-						for (int i = 0; i < modelTinhTien.getRowCount(); i++) {
-							int maMon = (int) modelTinhTien.getValueAt(i, 1); // Mã món
-							float donGia = (float) modelTinhTien.getValueAt(i, 3);
-							int soLuong = (int) modelTinhTien.getValueAt(i, 4); // Số lượng
-							float thanhTien = (float) modelTinhTien.getValueAt(i, 5); // Thành tiền
-							Float tienCoc = Float.parseFloat(txtTienCoc.getText());
-
-							ChiTietPhieuDatBan_DAO chiTietPhieuDatBan_DAO = new ChiTietPhieuDatBan_DAO();
-							ChiTietPhieuDatBan chiTietPhieuDatBan = new ChiTietPhieuDatBan(donGia, soLuong, tienCoc,
-									thanhTien, new MonAnDAO().getMonAnTheoMa(maMon),
-									new PhieuDatBan_DAO().getPhieuDatBanTheoMa(maPhieu));
-
-							chiTietPhieuDatBan_DAO.themChiTietPhieuDatBan(chiTietPhieuDatBan);
-						}
 						JOptionPane.showMessageDialog(this, "ĐẶT BÀN THÀNH CÔNG!");
 						// cập nhật trạng thái bàn
 						capNhatTrangThaiBanBySelectedItem(comboBoxBan);
 					} else if (radioBtnKHVangLai.isSelected()) {
 						// Khách vãng lai đặt bàn,
-
 						// thêm phiếu, thêm chi tiết phiếu
-						int maPhieu = themPhieuDatBan(comboBoxGio, comboBoxPhut, txtSDT.getText(),
-								(int) comboBoxBan.getSelectedItem(), nhanVien, true);
-
-						// Thêm chi tiết phiếu nữa là OK
-						for (int i = 0; i < modelTinhTien.getRowCount(); i++) {
-							int maMon = (int) modelTinhTien.getValueAt(i, 1); // Mã món
-							float donGia = (float) modelTinhTien.getValueAt(i, 3);
-							int soLuong = (int) modelTinhTien.getValueAt(i, 4); // Số lượng
-							float thanhTien = (float) modelTinhTien.getValueAt(i, 5); // Thành tiền
-							Float tienCoc = Float.parseFloat(txtTienCoc.getText());
-
-							ChiTietPhieuDatBan_DAO chiTietPhieuDatBan_DAO = new ChiTietPhieuDatBan_DAO();
-							ChiTietPhieuDatBan chiTietPhieuDatBan = new ChiTietPhieuDatBan(donGia, soLuong, tienCoc,
-									thanhTien, new MonAnDAO().getMonAnTheoMa(maMon),
-									new PhieuDatBan_DAO().getPhieuDatBanTheoMa(maPhieu));
-							chiTietPhieuDatBan_DAO.themChiTietPhieuDatBan(chiTietPhieuDatBan);
-						}
 						JOptionPane.showMessageDialog(this, "ĐẶT BÀN THÀNH CÔNG!");
 						capNhatTrangThaiBanBySelectedItem(comboBoxBan);
 					} else {
 						// Khách hàng cũ đặt bàn
-						int maPhieu = themPhieuDatBan(comboBoxGio, comboBoxPhut, txtSDT.getText(),
-								(int) comboBoxBan.getSelectedItem(), nhanVien, true);
-
-						// Thêm chi tiết phiếu nữa là OK
-						for (int i = 0; i < modelTinhTien.getRowCount(); i++) {
-							int maMon = (int) modelTinhTien.getValueAt(i, 1); // Mã món
-							float donGia = (float) modelTinhTien.getValueAt(i, 3);
-							int soLuong = (int) modelTinhTien.getValueAt(i, 4); // Số lượng
-							float thanhTien = (float) modelTinhTien.getValueAt(i, 5); // Thành tiền
-							Float tienCoc = Float.parseFloat(txtTienCoc.getText());
-
-							ChiTietPhieuDatBan_DAO chiTietPhieuDatBan_DAO = new ChiTietPhieuDatBan_DAO();
-							ChiTietPhieuDatBan chiTietPhieuDatBan = new ChiTietPhieuDatBan(donGia, soLuong, tienCoc,
-									thanhTien, new MonAnDAO().getMonAnTheoMa(maMon),
-									new PhieuDatBan_DAO().getPhieuDatBanTheoMa(maPhieu));
-							chiTietPhieuDatBan_DAO.themChiTietPhieuDatBan(chiTietPhieuDatBan);
-						}
 						JOptionPane.showMessageDialog(this, "ĐẶT BÀN THÀNH CÔNG!");
 						capNhatTrangThaiBanBySelectedItem(comboBoxBan);
 					}
@@ -1241,21 +1151,6 @@ public class FormDatBan extends JFrame {
 		}
 
 	}
-//
-//	private void handleCBBSoLuong(JComboBox<Integer> cbbBan, JComboBox<Integer> cbbSoKhach) {
-//		if(cbbBan!= null) {
-//			if(cbbSoKhach != null){
-//				cbbSoKhach.removeAllItems();
-//				DAO_Ban dao_Ban = new DAO_Ban();
-//				int soGhe = dao_Ban.getSoGheByMaBan((Integer) cbbBan.getSelectedItem());
-//				for (int i = 1; i <= soGhe; i++) {
-//					cbbSoKhach.addItem(i);
-//				}
-//			}
-//		}
-//	}
-//	
-
 	private float getTienCoc(int maBan, int soLuongKhach) {
 		float tienCoc = (float) 0.0;
 		DAO_Ban dao_Ban = new DAO_Ban();
@@ -1321,7 +1216,7 @@ public class FormDatBan extends JFrame {
 
 	}
 
-	private int themPhieuDatBan(JComboBox<Integer> comboBoxGio, JComboBox<Integer> comboBoxPhut, String sdtKhachHang,
+	private int themPhieuDatBan(JComboBox<Integer> comboBoxGio, JComboBox<Integer> comboBoxPhut, String sdtKhachHang,int soLuongKhach, float tienCoc, String trangThai,
 		Integer maBanDat, NhanVien nhanVien, boolean dungNgay) {
 
 		LocalDateTime hienTaiDateTime = LocalDateTime.now();
@@ -1352,7 +1247,7 @@ public class FormDatBan extends JFrame {
 
 		// Thêm phiếu đặt bàn
 		PhieuDatBan_DAO phieuDatBan_DAO = new PhieuDatBan_DAO();
-		PhieuDatBan phieuDatBan = new PhieuDatBan(hienTaiDateTime, gioDat, khachHangDat, nhanVien, banDat);
+		PhieuDatBan phieuDatBan = new PhieuDatBan(hienTaiDateTime, gioDat, soLuongKhach, tienCoc, trangThai, khachHangDat, nhanVien, banDat);
 		return phieuDatBan_DAO.themPhieuDatBan(phieuDatBan);
 //		JOptionPane.showMessageDialog(this, "ĐẶT BÀN THÀNH CÔNG");
 	}

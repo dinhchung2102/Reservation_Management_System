@@ -1,12 +1,24 @@
 package gui;
 
-import entity.NhanVien;
+import com.toedter.calendar.JDateChooser;
+import dao.DAO_Ban;
+import dao.DAO_KhachHang;
+import dao.DAO_KhuVuc;
+import dao.PhieuDatBan_DAO;
+import entity.*;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 
 public class FormPhieuDatBan extends JFrame implements ActionListener {
@@ -22,6 +34,7 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
     private final JMenuItem mniThongTinTaiKhoan;
     private final JMenuItem mniDangXuat;
     private final NhanVien nhanVien;
+    private final JDateChooser dateChooserNgayDen;
     /*
      *
      *
@@ -31,13 +44,16 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
      *
      *
      * */
-
+    Font txtFieldFont = new Font("Montserrat", Font.BOLD, 16);
     public FormPhieuDatBan(NhanVien nhanVien)  {
        this.nhanVien = nhanVien;
         setTitle("Quản lý đặt bàn");
         setExtendedState(JFrame.MAXIMIZED_BOTH); // Full màn hình
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+
+        Font btnFont = new Font("Arial", Font.BOLD, 20);
+        Color selectedColor = new Color(0,255,0);
 
         // tạo font cho JMenu
         /*
@@ -179,7 +195,7 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
         mnuMenuBar.add(mnuBan);
         mnuMenuBar.add(mnuMonAn);
         mnuMenuBar.add(mnuTaiKhoan);
-//=========================================
+        //=========================================
         //==============================================
         //==============================================
         Color backgroundColor =  Color.CYAN;
@@ -192,6 +208,7 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
 
         JPanel pnlChiTietPhieu = new JPanel();
         pnlChiTietPhieu.setLayout(new BoxLayout(pnlChiTietPhieu, BoxLayout.Y_AXIS));
+        pnlChiTietPhieu.setBorder(new EmptyBorder(0, 10,0, 0));
 
         pnlPhieuDatBan.add(pnlDanhSachPhieu);
         pnlPhieuDatBan.add(pnlChiTietPhieu);
@@ -199,36 +216,327 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
         //Panel tìm kiếm thong tin đặt bàn của khách hàng theo số điện thoại
         JPanel pnlSearch = new JPanel();
         pnlSearch.setLayout(new BoxLayout(pnlSearch, BoxLayout.X_AXIS));
+        pnlSearch.setBackground(backgroundColor);
+
+
+        JLabel lblSearch = new JLabel("SỐ ĐIỆN THOẠI: ");
+        lblSearch.setFont(txtFieldFont);
         JTextField txtSearch = new JTextField();
+        txtSearch.setFont(txtFieldFont);
+
+
         JButton btnSearch = new JButton("TÌM");
+
+
+
+        pnlSearch.add(lblSearch);
         pnlSearch.add(txtSearch);
         pnlSearch.add(btnSearch);
+
         //Panel hiển thị tên khách hàng sau khi tìm kiếm
         JPanel pnlCustomerName = new JPanel();
         pnlCustomerName.setLayout(new BoxLayout(pnlCustomerName, BoxLayout.X_AXIS));
-        JLabel lblCusName = new JLabel("Tên khách hàng: ");
+        JLabel lblCusName = new JLabel("KHÁCH HÀNG: ");
+        lblCusName.setFont(txtFieldFont);
         JTextField txtCusName = new JTextField();
+        txtCusName.setBackground(Color.white);
+        txtCusName.setFont(txtFieldFont);
         txtCusName.setEditable(false);
         pnlCustomerName.add(lblCusName);
+        pnlCustomerName.add(Box.createHorizontalStrut(12));
         pnlCustomerName.add(txtCusName);
-        //Panel lọc các thông tin danh sách phiếu
-        JPanel pnlFilter = new JPanel();
-        pnlFilter.setLayout(new BoxLayout(pnlFilter, BoxLayout.X_AXIS));
-        JButton btnToday = new JButton("Hôm nay");
-        btnToday.setBackground(Color.GREEN);
-        pnlFilter.add(btnToday);
+        pnlCustomerName.add(Box.createHorizontalStrut(63));
+        pnlCustomerName.setBackground(backgroundColor);
+
+        btnSearch.setFont(txtFieldFont);
+        btnSearch.addActionListener(e->{
+            DAO_KhachHang daoKhachHang = new DAO_KhachHang();
+            KhachHang khachHang = new KhachHang();
+            khachHang = daoKhachHang.getKhachHangBySDT(txtSearch.getText());
+            txtCusName.setText(khachHang.getTenKH());
+        });
 
         //Panel bảng danh sách phiếu:
         JPanel pnlTable = new JPanel();
-        String[] columnsName = {"STT", "Mã Phiếu", "Ngày Tạo Phiếu", "Ngày dùng", };
+        pnlTable.setLayout(new BoxLayout(pnlTable, BoxLayout.Y_AXIS));
+
+        String[] columnsName = {"STT", "Mã Phiếu", "Mã KH", "Ngày Tạo Phiếu", "Ngày Sử Dụng", "Trạng Thái"};
+        Object[][] data = {
+
+        };
+        DefaultTableModel modelTable = new DefaultTableModel(data, columnsName);
+        JTable tblDanhSachPhieu = new JTable(modelTable);
+
+        JTableHeader tableHeader = tblDanhSachPhieu.getTableHeader();
+        Font headerFont = new Font("Arial", Font.BOLD, 16);
+        tableHeader.setFont(headerFont);
+        tableHeader.setForeground(Color.BLACK);
+
+        JScrollPane scrollPane = new JScrollPane(tblDanhSachPhieu);
+        scrollPane.setPreferredSize(new Dimension(830, 600));
+        scrollPane.setBorder(new LineBorder(Color.black, 2));
+
+
+        tblDanhSachPhieu.getColumnModel().getColumn(0).setPreferredWidth(2);
+        tblDanhSachPhieu.getColumnModel().getColumn(1).setPreferredWidth(2);
+        tblDanhSachPhieu.getColumnModel().getColumn(2).setPreferredWidth(2);
+        tblDanhSachPhieu.getColumnModel().getColumn(3).setPreferredWidth(120);
+        tblDanhSachPhieu.getColumnModel().getColumn(4).setPreferredWidth(120);
+        tblDanhSachPhieu.getColumnModel().getColumn(5).setPreferredWidth(70);
+
+        loadDataToTableDSPhieu(tblDanhSachPhieu);
+
+        //=================================Panel Filter============================
+        JPanel pnlFilter = new JPanel();
+        pnlFilter.setLayout(new BoxLayout(pnlFilter, BoxLayout.X_AXIS));
+        pnlFilter.setMaximumSize(new Dimension(800, 10));
+        pnlFilter.setBackground(backgroundColor);
+
+        JButton btnAll = new JButton("TẤT CẢ");
+
+        JButton btnHomNay = new JButton("HÔM NAY");
+
+        JButton btnDaHuy = new JButton("ĐÃ HỦY");
+
+        pnlFilter.add(btnAll);
+        pnlFilter.add(btnHomNay);
+        pnlFilter.add(btnDaHuy);
+        pnlFilter.add(Box.createHorizontalStrut(500));
+
+        //=============================================================
+        pnlTable.add(pnlFilter);
+        pnlTable.add(scrollPane);
+        pnlTable.setPreferredSize(new Dimension(488,800));
+        pnlTable.setBackground(backgroundColor);
 
 
         //Gom: panel search, panel Tên KH, panel lọc danh sch phiêu
         pnlDanhSachPhieu.add(pnlSearch);
+        pnlDanhSachPhieu.add(Box.createVerticalStrut(5));
         pnlDanhSachPhieu.add(pnlCustomerName);
-        pnlDanhSachPhieu.add(pnlFilter);
+        pnlDanhSachPhieu.add(Box.createVerticalStrut(10));
+        pnlDanhSachPhieu.add(pnlTable);
+        //pnlDanhSachPhieu.add(pnlFilter);
+        pnlDanhSachPhieu.setBackground(backgroundColor);
 
 
+        //PANEL CHI TIẾT PHIẾU
+        JPanel pnlMa_Time = new JPanel();
+        pnlMa_Time.setLayout(new BoxLayout(pnlMa_Time, BoxLayout.X_AXIS));
+        pnlMa_Time.setBackground(backgroundColor);
+
+        JLabel lblMaPhieu = new JLabel("MÃ PHIẾU: ");
+        lblMaPhieu.setFont(txtFieldFont);
+        JTextField txtMaPhieu = new JTextField();
+        txtMaPhieu.setFont(txtFieldFont);
+        txtMaPhieu.setPreferredSize(new Dimension(30, 30));
+        txtMaPhieu.setEditable(false);
+        txtMaPhieu.setBackground(Color.WHITE);
+
+        JLabel lblNhanVien = new JLabel("NHÂN VIÊN ĐẶT BÀN: ");
+        lblNhanVien.setFont(txtFieldFont);
+        JTextField txtNhanVien = new JTextField();
+        txtNhanVien.setPreferredSize(new Dimension(120,30));
+        txtNhanVien.setBackground(Color.WHITE);
+        txtNhanVien.setText(nhanVien.getTenNV());
+        txtNhanVien.setFont(txtFieldFont);
+        txtNhanVien.setEditable(false);
+
+        pnlMa_Time.add(lblMaPhieu);
+        pnlMa_Time.add(txtMaPhieu);
+        pnlMa_Time.add(Box.createHorizontalStrut(28));
+        pnlMa_Time.add(lblNhanVien);
+        pnlMa_Time.add(Box.createHorizontalStrut(11));
+        pnlMa_Time.add(txtNhanVien);
+
+        //==================PANEL Vị trí bàn đã đt ==========================
+        JPanel pnlViTri = new JPanel();
+        pnlViTri.setLayout(new BoxLayout(pnlViTri, BoxLayout.X_AXIS));
+        pnlViTri.setBackground(backgroundColor);
+
+        JLabel lblKhuVuc = new JLabel("KHU VỰC: ");
+        lblKhuVuc.setFont(txtFieldFont);
+        JComboBox<String> comboBoxKhuVuc = new JComboBox<>();
+        comboBoxKhuVuc.setPreferredSize(new Dimension(82,30));
+        comboBoxKhuVuc.setFont(txtFieldFont);
+        comboBoxKhuVuc.setBackground(Color.white);
+
+        JLabel lblBan = new JLabel("BÀN: ");
+        lblBan.setFont(txtFieldFont);
+        JComboBox<Integer> comboBoxBan = new JComboBox<>();
+        comboBoxBan.setFont(txtFieldFont);
+        comboBoxBan.setBackground(Color.WHITE);
+
+        JLabel lblSoLuong = new JLabel("SỐ LƯỢNG: ");
+        lblSoLuong.setFont(txtFieldFont);
+        JComboBox<Integer> comboBoxSoLuong = new JComboBox<>();
+        comboBoxSoLuong.setFont(txtFieldFont);
+        comboBoxSoLuong.setBackground(Color.white);
+
+
+        pnlViTri.add(lblKhuVuc);
+        pnlViTri.add(Box.createHorizontalStrut(2));
+        pnlViTri.add(comboBoxKhuVuc);
+        pnlViTri.add(Box.createHorizontalStrut(26));
+        pnlViTri.add(lblBan);
+        pnlViTri.add(Box.createHorizontalStrut(14));
+        pnlViTri.add(comboBoxBan);
+        pnlViTri.add(Box.createHorizontalStrut(29));
+        pnlViTri.add(lblSoLuong);
+        pnlViTri.add(comboBoxSoLuong);
+
+        //=============================Xử lý sự kiện =============================
+        //========================================================================
+        getDataToComboBox(comboBoxKhuVuc, comboBoxBan, comboBoxSoLuong, "Lầu 1", 1);
+        comboBoxKhuVuc.addActionListener(e -> {
+            List<Ban> bans;
+            bans = new DAO_Ban().getBansByKhuVuc((String) comboBoxKhuVuc.getSelectedItem());
+            comboBoxBan.removeAllItems();
+            for (Ban ban : bans) {
+                comboBoxBan.addItem(ban.getMaBan());
+            }
+
+            comboBoxSoLuong.removeAllItems();
+            int soGhe = new DAO_Ban().getSoGheByMaBan((Integer) comboBoxBan.getSelectedItem());
+
+            for (int i = 1; i <= soGhe; i++) {
+                comboBoxSoLuong.addItem(i);
+            }
+        });
+        comboBoxBan.addActionListener(e -> {
+            comboBoxSoLuong.removeAllItems();
+            if (comboBoxBan.getItemCount() > 0) {
+                int soGhe2 = new DAO_Ban().getSoGheByMaBan((Integer) comboBoxBan.getSelectedItem());
+                for (int i = 1; i <= soGhe2; i++) {
+                    comboBoxSoLuong.addItem(i);
+                }
+            }
+        });
+
+        //=================================GIOW DEN =====================================
+        JPanel pnlGioDat = new JPanel();
+        pnlGioDat.setLayout(new BoxLayout(pnlGioDat, BoxLayout.X_AXIS));
+        pnlGioDat.setBackground(backgroundColor);
+        JLabel lblGioDen = new JLabel("GIỜ ĐẾN: ");
+        lblGioDen.setFont(txtFieldFont);
+
+        JComboBox<Integer> comboBoxGio = new JComboBox<>();
+        comboBoxGio.setFont(txtFieldFont);
+        for (int i = 7; i <= 21; i++) {
+            comboBoxGio.addItem(i);
+        }
+        JLabel lblGio = new JLabel("giờ");
+        lblGio.setFont(txtFieldFont);
+
+        JComboBox<Integer> comboBoxPhut = new JComboBox<>();
+        comboBoxPhut.setFont(txtFieldFont);
+        for (int i = 0; i <= 59; i++) {
+            comboBoxPhut.addItem(i);
+        }
+        JLabel lblPhut = new JLabel("phút");
+        lblPhut.setFont(txtFieldFont);
+
+        JLabel lblNgayDen = new JLabel("NGÀY: ");
+        lblNgayDen.setFont(txtFieldFont);
+        dateChooserNgayDen = new JDateChooser();
+        dateChooserNgayDen.setFont(txtFieldFont);
+        dateChooserNgayDen.setBackground(Color.white);
+        dateChooserNgayDen.setMinSelectableDate(new Date());
+
+        pnlGioDat.add(lblGioDen);
+        pnlGioDat.add(Box.createHorizontalStrut(8));
+        pnlGioDat.add(comboBoxGio);
+        pnlGioDat.add(Box.createHorizontalStrut(2));
+        pnlGioDat.add(lblGio);
+        pnlGioDat.add(Box.createHorizontalStrut(10));
+        pnlGioDat.add(comboBoxPhut);
+        pnlGioDat.add(Box.createHorizontalStrut(2));
+        pnlGioDat.add(lblPhut);
+        pnlGioDat.add(Box.createHorizontalStrut(34));
+        pnlGioDat.add(lblNgayDen);
+        pnlGioDat.add(Box.createHorizontalStrut(2));
+        pnlGioDat.add(dateChooserNgayDen);
+        //========================================
+        //==================================================Tiền cọc==============
+        JPanel pnlTienCoc = new JPanel();
+        pnlTienCoc.setLayout(new BoxLayout(pnlTienCoc, BoxLayout.X_AXIS));
+        pnlTienCoc.setBackground(backgroundColor);
+
+        JLabel lblTienCoc = new JLabel("TIỀN CỌC: ");
+        lblTienCoc.setFont(txtFieldFont);
+        JTextField txtTienCoc = new JTextField();
+        txtTienCoc.setFont(txtFieldFont);
+        txtTienCoc.setPreferredSize(new Dimension(100, 30));
+
+        pnlTienCoc.add(lblTienCoc);
+        pnlTienCoc.add(txtTienCoc);
+        //========================================Panel món ăn=======================
+        JPanel pnlMonAn = new JPanel();
+        pnlMonAn.setPreferredSize(new Dimension(500, 550));
+        pnlMonAn.setBorder(new LineBorder(Color.BLACK, 2));
+
+        String[] columnNamesTinhTien = { "STT", "Mã Món", "Tên", "Đơn giá", "Số lượng", "Thành tiền" };
+        Object[][] dataTinhTien = {
+
+        };
+
+        DefaultTableModel modelMonAn = new DefaultTableModel(dataTinhTien, columnNamesTinhTien);
+        JTable tblMonAn = new JTable(modelMonAn);
+
+        Font txtFieldFont = new Font("Arial", Font.PLAIN, 14);
+        tblMonAn.setBackground(Color.white);
+        tblMonAn.setForeground(Color.blue);
+        tblMonAn.setFont(txtFieldFont);
+        tblMonAn.setRowHeight(30);
+
+        tblMonAn.getColumnModel().getColumn(0).setPreferredWidth(5);
+        tblMonAn.getColumnModel().getColumn(1).setPreferredWidth(5);
+        tblMonAn.getColumnModel().getColumn(2).setPreferredWidth(100);
+        tblMonAn.getColumnModel().getColumn(3).setPreferredWidth(100);
+        tblMonAn.getColumnModel().getColumn(4).setPreferredWidth(50);
+        tblMonAn.getColumnModel().getColumn(5).setPreferredWidth(50);
+
+        JTableHeader tableHeaderMonAn = tblMonAn.getTableHeader();
+        tableHeaderMonAn.setFont(headerFont);
+        tableHeaderMonAn.setForeground(Color.BLACK);
+
+
+        JScrollPane scrollPaneMonAn = new JScrollPane(tblMonAn);
+        scrollPaneMonAn.setPreferredSize(new Dimension(750, 525));
+
+        pnlMonAn.add(scrollPaneMonAn);
+        //===================================Panel button Sử dụng, Thaydđổi, hủy===================
+        JPanel pnlButton = new JPanel();
+        pnlButton.setLayout(new BoxLayout(pnlButton, BoxLayout.X_AXIS));
+
+        JButton btnSuDung = new JButton("SỬ DỤNG");
+        JButton btnThayDoi = new JButton("THAY ĐỔI");
+        JButton btnHuyDat = new JButton("HỦY ĐẶT BÀN");
+
+        pnlButton.add(btnSuDung);
+        pnlButton.add(btnThayDoi);
+        pnlButton.add(btnHuyDat);
+
+        pnlMonAn.add(pnlButton);
+
+
+        //==========================add cac panel======================
+        pnlChiTietPhieu.add(pnlMa_Time);
+        pnlChiTietPhieu.add(Box.createVerticalStrut(10));
+        pnlChiTietPhieu.add(pnlViTri);
+        pnlChiTietPhieu.add(Box.createVerticalStrut(10));
+        pnlChiTietPhieu.add(pnlGioDat);
+        pnlChiTietPhieu.add(Box.createVerticalStrut(10));
+        pnlChiTietPhieu.add(pnlTienCoc);
+        pnlChiTietPhieu.add(Box.createVerticalStrut(10));
+        pnlChiTietPhieu.add(pnlMonAn);
+        pnlChiTietPhieu.add(Box.createVerticalStrut(10));
+        pnlChiTietPhieu.add(pnlButton);
+        pnlChiTietPhieu.setBackground(backgroundColor);
+
+
+
+        pnlPhieuDatBan.setBorder(new EmptyBorder(10, 10, 10, 10));
         getContentPane().add(pnlPhieuDatBan);
 
     }
@@ -283,6 +591,62 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
                 DangNhap_GUI dangNhap_GUI = new DangNhap_GUI();
                 dangNhap_GUI.setVisible(true);
             }
+        }
+    }
+
+    private void getDataToComboBox(JComboBox<String> cbbKhuVuc, JComboBox<Integer> cbbBan,
+                                   JComboBox<Integer> cbbSoKhach, String khuVuc, int maBan) {
+
+        DAO_KhuVuc dao_KhuVuc = new DAO_KhuVuc();
+        List<KhuVuc> listKhuVuc = new ArrayList<KhuVuc>();
+        listKhuVuc = dao_KhuVuc.getKhuVuc();
+
+        List<String> listTenKV = new ArrayList<String>();
+        for (KhuVuc kVuc : listKhuVuc) {
+            listTenKV.add(kVuc.getTenKhuVuc());
+        }
+        // System.out.println(listTenKV);
+        for (String tenKV : listTenKV) {
+            cbbKhuVuc.addItem(tenKV);
+        }
+        cbbKhuVuc.setSelectedItem(khuVuc);
+        DAO_Ban daoBan = new DAO_Ban();
+        List<Ban> bans = daoBan.getBansByKhuVuc((String) cbbKhuVuc.getSelectedItem());
+
+        for (Ban ban : bans) {
+            cbbBan.addItem(ban.getMaBan());
+        }
+        cbbBan.setSelectedItem(maBan);
+
+        DAO_Ban dao_Ban = new DAO_Ban();
+        int soGhe = dao_Ban.getSoGheByMaBan(maBan);
+        for (int i = 1; i <= soGhe; i++) {
+            cbbSoKhach.addItem(i);
+        }
+
+    }
+    public static void loadDataToTableDSPhieu(JTable table) {
+        PhieuDatBan_DAO phieuDatBanDao = new PhieuDatBan_DAO();
+        List<PhieuDatBan> listPhieu = phieuDatBanDao.getAllPhieuDatBan();
+
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        model.setRowCount(0);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+
+        int stt = 1;
+        for (PhieuDatBan phieu : listPhieu) {
+            String formattedNgayTaoPhieu = phieu.getNgayTaoPhieu().format(formatter);
+            String formattedThoiGianDatBan = phieu.getThoiGianDatBan().format(formatter);
+
+            model.addRow(new Object[] {
+                    stt++,
+                    phieu.getMaPhieuDatBan(),
+                    phieu.getKhachHang().getMaKH(),
+                    formattedNgayTaoPhieu,
+                    formattedThoiGianDatBan,
+                    phieu.getTrangThai()
+            });
         }
     }
 

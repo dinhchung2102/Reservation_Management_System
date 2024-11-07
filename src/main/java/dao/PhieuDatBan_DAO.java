@@ -21,40 +21,44 @@ public class PhieuDatBan_DAO {
 	DAO_KhachHang khachHang_DAO = new DAO_KhachHang();
 	NhanVien_DAO nhanVien_DAO = new NhanVien_DAO();
 	DAO_Ban ban_DAO = new DAO_Ban();
-	
-	
+
+
 	public ArrayList<PhieuDatBan> getAllPhieuDatBan() {
-	    ArrayList<PhieuDatBan> dsPhieuDatBan = new ArrayList<>();
-	    Connection con = ConnectDB.getConnection();
-	    String query = "select * from PhieuDatBan";
+		ArrayList<PhieuDatBan> dsPhieuDatBan = new ArrayList<>();
+		Connection con = ConnectDB.getConnection();
+		String query = "select * from PhieuDatBan";
 
-	    try {
-	        Statement stm = con.createStatement();
-	        ResultSet rs = stm.executeQuery(query);
+		try {
+			Statement stm = con.createStatement();
+			ResultSet rs = stm.executeQuery(query);
 
-	        while (rs.next()) {
-	            int maPhieuDatBan = rs.getInt("maPhieuDatBan");
+			while (rs.next()) {
+				int maPhieuDatBan = rs.getInt("maPhieuDatBan");
 
-	            // Sửa phần này
-	            LocalDateTime ngayTaoPhieu = rs.getDate("ngayTaoPhieu").toLocalDate()
-	                    .atStartOfDay(ZoneId.systemDefault())
-	                    .toLocalDateTime();
+				// Lấy giá trị Timestamp từ cơ sở dữ liệu cho cả ngày và giờ
+				Timestamp timestampNgayTaoPhieu = rs.getTimestamp("ngayTaoPhieu");
+				LocalDateTime ngayTaoPhieu = timestampNgayTaoPhieu.toLocalDateTime();
 
-	            Timestamp timestampThoiGianDatBan = rs.getTimestamp("thoiGianDatBan");
-	            LocalDateTime thoiGianDatBan = timestampThoiGianDatBan.toLocalDateTime();
+				Timestamp timestampThoiGianDatBan = rs.getTimestamp("thoiGianDatBan");
+				LocalDateTime thoiGianDatBan = timestampThoiGianDatBan.toLocalDateTime();
 
-	            KhachHang khachHang = khachHang_DAO.getKhachHangTheoMa(rs.getInt("maKH"));
-	            NhanVien nhanVien = nhanVien_DAO.getNhanVienTheoMa(rs.getInt("maNV"));
-	            Ban ban = ban_DAO.getBanById(rs.getInt("maBan"));
+				int soLuongKhach = rs.getInt("soLuongKhach");
+				float tienCoc = rs.getFloat("tienCoc");
+				String trangThai = rs.getString("trangThai");
 
-	            PhieuDatBan phieuDatBan = new PhieuDatBan(maPhieuDatBan, ngayTaoPhieu, thoiGianDatBan, khachHang, nhanVien, ban);
-	            dsPhieuDatBan.add(phieuDatBan);
-	        }
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    }
-	    return dsPhieuDatBan;
+				KhachHang khachHang = khachHang_DAO.getKhachHangTheoMa(rs.getInt("maKH"));
+				NhanVien nhanVien = nhanVien_DAO.getNhanVienTheoMa(rs.getInt("maNV"));
+				Ban ban = ban_DAO.getBanById(rs.getInt("maBan"));
+
+				PhieuDatBan phieuDatBan = new PhieuDatBan(maPhieuDatBan, ngayTaoPhieu, thoiGianDatBan, soLuongKhach, tienCoc, trangThai, khachHang, nhanVien, ban);
+				dsPhieuDatBan.add(phieuDatBan);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return dsPhieuDatBan;
 	}
+
 
 
 	public PhieuDatBan getPhieuDatBanTheoMa(int maPhieuDatBanInput) {
@@ -72,11 +76,14 @@ public class PhieuDatBan_DAO {
 				LocalDateTime ngayTaoPhieu = timestampNgayTaoPhieu.toLocalDateTime();
 				Timestamp timestampThoiGianDatBan = rs.getTimestamp("thoiGianDatBan");
 				LocalDateTime thoiGianDatBan = timestampThoiGianDatBan.toLocalDateTime();
+				int soLuongKhach = rs.getInt("soLuongKhach");
+				float tienCoc = rs.getFloat("tienCoc");
+				String trangThai = rs.getString("trangThai");
 				KhachHang khachHang = khachHang_DAO.getKhachHangTheoMa(rs.getInt("maKH"));
 				NhanVien nhanVien = nhanVien_DAO.getNhanVienTheoMa(rs.getInt("maNV"));
 				Ban ban = ban_DAO.getBanById(rs.getInt("maBan"));
 				
-				phieuDatBan = new PhieuDatBan(maPhieuDatBan, ngayTaoPhieu, thoiGianDatBan, khachHang, nhanVien, ban);
+				phieuDatBan = new PhieuDatBan(maPhieuDatBan, ngayTaoPhieu, thoiGianDatBan,soLuongKhach, tienCoc, trangThai, khachHang, nhanVien, ban);
 			}
 
 		} catch (SQLException e) {
@@ -85,32 +92,10 @@ public class PhieuDatBan_DAO {
 		}
 		return phieuDatBan;
 	}
-	
-//	public boolean themPhieuDatBan(PhieuDatBan phieuDatBan) {//trả về mã phiếu đặt bàn vừa được thêm
-//		Connection con = ConnectDB.getInstance().getConnection();
-//		String query = "insert into PhieuDatBan values(?,?,?,?,?)";
-//		int n = 0;
-//		try {
-//			PreparedStatement pstm = con.prepareStatement(query);
-//				Date sqlDateNgayTaoPhieu = new Date(phieuDatBan.getNgayTaoPhieu().getTime());
-//			pstm.setDate(1, sqlDateNgayTaoPhieu);
-//			pstm.setTimestamp(2, Timestamp.valueOf(phieuDatBan.getThoiGianDatBan()));
-//			pstm.setInt(3, phieuDatBan.getKhachHang().getMaKH());
-//			pstm.setInt(4, phieuDatBan.getNhanVien().getMaNV());
-//			pstm.setInt(5, phieuDatBan.getBan().getMaBan());
-//			
-//			n = pstm.executeUpdate();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		return n > 0;
-//	}
-	
-	
 	//trả về mã phiếu đặt bàn vừa được thêm
 	public int themPhieuDatBan(PhieuDatBan phieuDatBan) {
 	    Connection con = ConnectDB.getConnection();
-	    String query = "insert into PhieuDatBan(ngayTaoPhieu, thoiGianDatBan, maKH, maNV, maBan) values(?,?,?,?,?)";
+	    String query = "insert into PhieuDatBan(ngayTaoPhieu, thoiGianDatBan,soLuongKhach,tienCoc, trangThai, maKH, maNV, maBan) values(?,?,?,?,?,?,?,?)";
 	    
 	    int maPhieuDatBan = -1; // Giá trị mặc định nếu không lấy được maPhieuDatBan
 	    try {
@@ -120,9 +105,12 @@ public class PhieuDatBan_DAO {
 	        // Chuyển đổi dữ liệu và thiết lập các tham số
 	        pstm.setTimestamp(1, Timestamp.valueOf(phieuDatBan.getNgayTaoPhieu()));
 	        pstm.setTimestamp(2, Timestamp.valueOf(phieuDatBan.getThoiGianDatBan()));
-	        pstm.setInt(3, phieuDatBan.getKhachHang().getMaKH());
-	        pstm.setInt(4, phieuDatBan.getNhanVien().getMaNV());
-	        pstm.setInt(5, phieuDatBan.getBan().getMaBan());
+			pstm.setInt(3, phieuDatBan.getSoLuongKhach());
+			pstm.setFloat(4, phieuDatBan.getTienCoc());
+			pstm.setString(5, phieuDatBan.getTrangThai());
+	        pstm.setInt(6, phieuDatBan.getKhachHang().getMaKH());
+	        pstm.setInt(7, phieuDatBan.getNhanVien().getMaNV());
+	        pstm.setInt(8, phieuDatBan.getBan().getMaBan());
 
 	        // Thực thi câu lệnh SQL
 	        int affectedRows = pstm.executeUpdate();

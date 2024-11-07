@@ -29,10 +29,7 @@ import dao.TaiKhoan_DAO;
 import entity.NhanVien;
 import entity.TaiKhoan;
 
-public class DangNhap_GUI extends JFrame implements ActionListener{
-    /**
-     *
-     */
+public class DangNhap_GUI extends JFrame implements ActionListener {
     private static final long serialVersionUID = 1L;
     private JPanel pnlDangNhap;
     private JPanel pnlForm;
@@ -45,23 +42,21 @@ public class DangNhap_GUI extends JFrame implements ActionListener{
     private JPanel pnlButton;
     private JButton btnDangNhap;
 
-
-
     public DangNhap_GUI() {
         setTitle("Quản lý đặt bàn");
         setExtendedState(JFrame.MAXIMIZED_BOTH); // Full màn hình
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
+
+        // Cập nhật trạng thái bàn
         DAO_Ban dao_BanTest = new DAO_Ban();
-        for (int i = 1; i <=18; i++) {
+        for (int i = 1; i <= 18; i++) {
             dao_BanTest.capNhatTrangThaiBanById(i, false);
         }
 
-        pnlDangNhap = new JPanel(new GridBagLayout()){
-            /**
-             *
-             */
+        // Tạo panel chính với hình nền
+        pnlDangNhap = new JPanel(new GridBagLayout()) {
             private static final long serialVersionUID = 1L;
             private Image backgroundImage = new ImageIcon("src/main/resources/images/background.jpg").getImage();
 
@@ -72,13 +67,13 @@ public class DangNhap_GUI extends JFrame implements ActionListener{
             }
         };
 
-        // Tạo form đăng nhập và thêm vào vùng CENTER
+        // Tạo form đăng nhập
         pnlForm = new JPanel();
         pnlForm.setLayout(new BoxLayout(pnlForm, BoxLayout.Y_AXIS));
         Border borderForm = BorderFactory.createLineBorder(Color.CYAN, 2);
         pnlForm.setBorder(borderForm);
 
-
+        // Tạo panel tài khoản
         pnlTaiKhoan = new JPanel();
         lblTaiKhoan = new JLabel("Tài khoản:");
         lblTaiKhoan.setFont(new Font("Montserrat", Font.BOLD, 25));
@@ -88,6 +83,7 @@ public class DangNhap_GUI extends JFrame implements ActionListener{
         pnlTaiKhoan.add(lblTaiKhoan);
         pnlTaiKhoan.add(txtTaiKhoan);
 
+        // Tạo panel mật khẩu
         pnlMatKhau = new JPanel();
         lblMatKhau = new JLabel("Mật khẩu:");
         lblMatKhau.setFont(new Font("Montserrat", Font.BOLD, 25));
@@ -97,16 +93,19 @@ public class DangNhap_GUI extends JFrame implements ActionListener{
         pnlMatKhau.add(Box.createHorizontalStrut(4));
         pnlMatKhau.add(txtMatKhau);
 
+        // Tạo panel nút đăng nhập
         pnlButton = new JPanel();
         btnDangNhap = new JButton("Đăng Nhập");
-        btnDangNhap.setBackground(new Color(0,255,0));
+        btnDangNhap.setBackground(new Color(0, 255, 0));
         btnDangNhap.setPreferredSize(new Dimension(150, 40));
         pnlButton.add(btnDangNhap);
 
+        // Thêm các panel vào form
         pnlForm.add(pnlTaiKhoan);
         pnlForm.add(pnlMatKhau);
         pnlForm.add(pnlButton);
 
+        // Đặt form vào panel chính
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -114,16 +113,19 @@ public class DangNhap_GUI extends JFrame implements ActionListener{
         gbc.anchor = GridBagConstraints.CENTER; // Căn giữa trục dọc
         pnlDangNhap.add(pnlForm, gbc);
 
-//        pnlDangNhap.add(pnlForm, BorderLayout.CENTER);
-
+        // Thêm panel chính vào JFrame
         add(pnlDangNhap);
-        btnDangNhap.addActionListener((ActionListener) this);
+
+        // Thêm ActionListener
+        btnDangNhap.addActionListener(this);
+        txtTaiKhoan.addActionListener(this);
+        txtMatKhau.addActionListener(this);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         Object o = e.getSource();
-        if (o.equals(btnDangNhap)) {
+        if (o.equals(btnDangNhap) || o.equals(txtTaiKhoan) || o.equals(txtMatKhau)) {
             String username = txtTaiKhoan.getText();
             @SuppressWarnings("deprecation")
             String password = txtMatKhau.getText();
@@ -131,20 +133,16 @@ public class DangNhap_GUI extends JFrame implements ActionListener{
             TaiKhoan_DAO taiKhoan_DAO = new TaiKhoan_DAO();
             int maNV = taiKhoan_DAO.getMaNhanVienByTaiKhoan(username, password);
 
-            NhanVien nhanVien = new NhanVien();
-            nhanVien = new NhanVien_DAO().getNhanVienTheoMa(maNV);
+            NhanVien nhanVien = new NhanVien_DAO().getNhanVienTheoMa(maNV);
 
             TaiKhoan tk = taiKhoan_DAO.dangNhap(username, password);
-            if (tk!=null) {
+            if (tk != null) {
                 this.dispose();
                 FormManHinhChinh newFrm = new FormManHinhChinh(nhanVien);
                 newFrm.setVisible(true);
-            }
-            else {
+            } else {
                 JOptionPane.showMessageDialog(null, "Sai tên tài khoản hoặc mật khẩu!!!");
             }
-
         }
-
     }
 }
