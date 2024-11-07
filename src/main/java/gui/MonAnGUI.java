@@ -101,6 +101,7 @@ public class MonAnGUI extends JFrame {
 		mnuDatBan.setFont(fontMenu);
 		
 		JMenuItem mniManHinhChinhItem = new JMenuItem("Màn hình chính");
+        mniManHinhChinhItem.setFont(fontMenuItem);
 		mnuDatBan.add(mniManHinhChinhItem);
 		
 		mniManHinhChinhItem.addActionListener(e->{

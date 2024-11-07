@@ -96,14 +96,16 @@ public class KhachHangGUI extends JFrame{
 		// Tạo menu đặt bàn
 		mnuDatBan = new JMenu("     Đặt bàn     ");
 		mnuDatBan.setFont(fontMenu);
-		mnuDatBan.setOpaque(true);
 		//mnuDatBan.setBackground(Color.green);
-		mnuDatBan.setBorder(new LineBorder(Color.white, 1));
-		mnuDatBan.addActionListener(e->{
-			dispose();
-			FormManHinhChinh newFrmManHinhChinh = new FormManHinhChinh(nhanVien);
-			newFrmManHinhChinh.setVisible(true);
-		});
+        JMenuItem mniManHinhChinhItem = new JMenuItem("Màn hình chính");
+        mniManHinhChinhItem.setFont(fontMenuItem);
+        mnuDatBan.add(mniManHinhChinhItem);
+
+        mniManHinhChinhItem.addActionListener(e->{
+            this.dispose();
+            FormManHinhChinh newFormManHinhChinh = new FormManHinhChinh(nhanVien);
+            newFormManHinhChinh.setVisible(true);
+        });
 
 		// mnuDatBan.addActionListener(this);
 
@@ -152,6 +154,7 @@ public class KhachHangGUI extends JFrame{
 		// Tạo menu khách hàng
 		mnuKhachHang = new JMenu("   Khách hàng   ");
 		mnuKhachHang.setFont(fontMenu);
+        mnuKhachHang.setOpaque(true);
 		mnuKhachHang.setBackground(Color.GREEN);
 		mniQuanLiKhachHang = new JMenuItem("Quản lí khách hàng");
 		mniQuanLiKhachHang.setFont(fontMenuItem);

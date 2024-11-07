@@ -102,10 +102,17 @@ public class KhuyenMaiGUI extends JFrame {
 		// Tạo menu đặt bàn
 		mnuDatBan = new JMenu("     Đặt bàn     ");
 		mnuDatBan.setFont(fontMenu);
-		mnuDatBan.setOpaque(true);
-		mnuDatBan.setBackground(Color.green);
-		mnuDatBan.setBorder(new LineBorder(Color.white, 1));
 
+
+        JMenuItem mniManHinhChinhItem = new JMenuItem("Màn hình chính");
+        mniManHinhChinhItem.setFont(fontMenuItem);
+        mnuDatBan.add(mniManHinhChinhItem);
+
+        mniManHinhChinhItem.addActionListener(e->{
+            this.dispose();
+            FormManHinhChinh newFormManHinhChinh = new FormManHinhChinh(nhanVien);
+            newFormManHinhChinh.setVisible(true);
+        });
 		// mnuDatBan.addActionListener(this);
 
 		// Tạo menu phiếu đặt bàn
@@ -138,6 +145,8 @@ public class KhuyenMaiGUI extends JFrame {
 
 		// Tạo menu khuyến mãi
 		mnuKhuyenMai = new JMenu("   Khuyến mãi   ");
+        mnuKhuyenMai.setOpaque(true);
+        mnuKhuyenMai.setBackground(Color.green);
 		mnuKhuyenMai.setFont(fontMenu);
 		mniDSKhuyenMai = new JMenuItem("Danh sách khuyến mãi");
 		mniDSKhuyenMai.setFont(fontMenuItem);

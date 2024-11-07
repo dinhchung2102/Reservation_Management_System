@@ -77,14 +77,24 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
         // Tạo menu đặt bàn
         mnuDatBan = new JMenu("     Đặt bàn     ");
         mnuDatBan.setFont(fontMenu);
-        mnuDatBan.setOpaque(true);
-        mnuDatBan.setBackground(Color.GREEN);
+        //mnuDatBan.setBackground(Color.GREEN);
         mnuDatBan.setBorder(new LineBorder(Color.white, 1));
 
         mnuDatBan.addActionListener(this);
+        JMenuItem mniManHinhChinhItem = new JMenuItem("Màn hình chính");
+        mniManHinhChinhItem.setFont(fontMenuItem);
+        mnuDatBan.add(mniManHinhChinhItem);
+
+        mniManHinhChinhItem.addActionListener(e->{
+            this.dispose();
+            FormManHinhChinh newFormManHinhChinh = new FormManHinhChinh(nhanVien);
+            newFormManHinhChinh.setVisible(true);
+        });
 
         // Tạo menu phiếu đặt bàn
         JMenu mnuPhieuDatBan = new JMenu("   Phiếu đặt bàn   ");
+        mnuPhieuDatBan.setBackground(selectedColor);
+        mnuPhieuDatBan.setOpaque(true);
         mnuPhieuDatBan.setFont(fontMenu);
         JMenuItem mniDSPhieuDatBan = new JMenuItem("Danh sách phiếu đặt");
         mniDSPhieuDatBan.setFont(fontMenuItem);
