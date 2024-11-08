@@ -58,6 +58,53 @@ public class PhieuDatBan_DAO {
 		}
 		return dsPhieuDatBan;
 	}
+	public ArrayList<PhieuDatBan> getAllPhieuDatBanByMaKH(int maKH) {
+		ArrayList<PhieuDatBan> dsPhieuDatBan = new ArrayList<>();
+		String query = "SELECT * FROM PhieuDatBan WHERE maKH = ?";
+
+		// Kết nối và PreparedStatement trong try-with-resources để tự động đóng
+		try (Connection con = ConnectDB.getConnection();
+			 PreparedStatement stm = con.prepareStatement(query)) {
+
+			// Set tham số maKH vào câu truy vấn
+			stm.setInt(1, maKH);
+
+			// Thực thi truy vấn
+			try (ResultSet rs = stm.executeQuery()) {
+				while (rs.next()) {
+					int maPhieuDatBan = rs.getInt("maPhieuDatBan");
+
+					// Lấy giá trị Timestamp từ cơ sở dữ liệu cho cả ngày và giờ
+					Timestamp timestampNgayTaoPhieu = rs.getTimestamp("ngayTaoPhieu");
+					LocalDateTime ngayTaoPhieu = timestampNgayTaoPhieu != null ? timestampNgayTaoPhieu.toLocalDateTime() : null;
+
+					Timestamp timestampThoiGianDatBan = rs.getTimestamp("thoiGianDatBan");
+					LocalDateTime thoiGianDatBan = timestampThoiGianDatBan != null ? timestampThoiGianDatBan.toLocalDateTime() : null;
+
+					int soLuongKhach = rs.getInt("soLuongKhach");
+					float tienCoc = rs.getFloat("tienCoc");
+					String trangThai = rs.getString("trangThai");
+
+					// Lấy các đối tượng KhachHang, NhanVien và Ban
+					KhachHang khachHang = khachHang_DAO.getKhachHangTheoMa(rs.getInt("maKH"));
+					NhanVien nhanVien = nhanVien_DAO.getNhanVienTheoMa(rs.getInt("maNV"));
+					Ban ban = ban_DAO.getBanById(rs.getInt("maBan"));
+
+					// Tạo đối tượng PhieuDatBan
+					PhieuDatBan phieuDatBan = new PhieuDatBan(maPhieuDatBan, ngayTaoPhieu, thoiGianDatBan, soLuongKhach, tienCoc, trangThai, khachHang, nhanVien, ban);
+
+					// Thêm vào danh sách
+					dsPhieuDatBan.add(phieuDatBan);
+				}
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace(); // In lỗi nếu có
+		}
+
+		return dsPhieuDatBan;
+	}
+
 
 
 

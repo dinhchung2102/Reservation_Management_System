@@ -10,11 +10,15 @@ import entity.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -259,12 +263,7 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
         pnlCustomerName.setBackground(backgroundColor);
 
         btnSearch.setFont(txtFieldFont);
-        btnSearch.addActionListener(e->{
-            DAO_KhachHang daoKhachHang = new DAO_KhachHang();
-            KhachHang khachHang = new KhachHang();
-            khachHang = daoKhachHang.getKhachHangBySDT(txtSearch.getText());
-            txtCusName.setText(khachHang.getTenKH());
-        });
+
 
         //Panel bảng danh sách phiếu:
         JPanel pnlTable = new JPanel();
@@ -295,6 +294,8 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
         tblDanhSachPhieu.getColumnModel().getColumn(5).setPreferredWidth(70);
 
         loadDataToTableDSPhieu(tblDanhSachPhieu);
+
+
 
         //=================================Panel Filter============================
         JPanel pnlFilter = new JPanel();
@@ -348,7 +349,6 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
         JTextField txtNhanVien = new JTextField();
         txtNhanVien.setPreferredSize(new Dimension(120,30));
         txtNhanVien.setBackground(Color.WHITE);
-        txtNhanVien.setText(nhanVien.getTenNV());
         txtNhanVien.setFont(txtFieldFont);
         txtNhanVien.setEditable(false);
 
@@ -397,31 +397,6 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
 
         //=============================Xử lý sự kiện =============================
         //========================================================================
-        getDataToComboBox(comboBoxKhuVuc, comboBoxBan, comboBoxSoLuong, "Lầu 1", 1);
-        comboBoxKhuVuc.addActionListener(e -> {
-            List<Ban> bans;
-            bans = new DAO_Ban().getBansByKhuVuc((String) comboBoxKhuVuc.getSelectedItem());
-            comboBoxBan.removeAllItems();
-            for (Ban ban : bans) {
-                comboBoxBan.addItem(ban.getMaBan());
-            }
-
-            comboBoxSoLuong.removeAllItems();
-            int soGhe = new DAO_Ban().getSoGheByMaBan((Integer) comboBoxBan.getSelectedItem());
-
-            for (int i = 1; i <= soGhe; i++) {
-                comboBoxSoLuong.addItem(i);
-            }
-        });
-        comboBoxBan.addActionListener(e -> {
-            comboBoxSoLuong.removeAllItems();
-            if (comboBoxBan.getItemCount() > 0) {
-                int soGhe2 = new DAO_Ban().getSoGheByMaBan((Integer) comboBoxBan.getSelectedItem());
-                for (int i = 1; i <= soGhe2; i++) {
-                    comboBoxSoLuong.addItem(i);
-                }
-            }
-        });
 
         //=================================GIOW DEN =====================================
         JPanel pnlGioDat = new JPanel();
@@ -549,7 +524,104 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
         pnlPhieuDatBan.setBorder(new EmptyBorder(10, 10, 10, 10));
         getContentPane().add(pnlPhieuDatBan);
 
+        getDataToComboBox(comboBoxKhuVuc, comboBoxBan, comboBoxSoLuong, "Lầu 1", 1);
+        comboBoxKhuVuc.addActionListener(e -> {
+            List<Ban> bans;
+            bans = new DAO_Ban().getBansByKhuVuc((String) comboBoxKhuVuc.getSelectedItem());
+            comboBoxBan.removeAllItems();
+            for (Ban ban : bans) {
+                comboBoxBan.addItem(ban.getMaBan());
+            }
+
+            comboBoxSoLuong.removeAllItems();
+            int soGhe = new DAO_Ban().getSoGheByMaBan((Integer) comboBoxBan.getSelectedItem());
+
+            for (int i = 1; i <= soGhe; i++) {
+                comboBoxSoLuong.addItem(i);
+            }
+        });
+        comboBoxBan.addActionListener(e -> {
+            comboBoxSoLuong.removeAllItems();
+            if (comboBoxBan.getItemCount() > 0) {
+                int soGhe2 = new DAO_Ban().getSoGheByMaBan((Integer) comboBoxBan.getSelectedItem());
+                for (int i = 1; i <= soGhe2; i++) {
+                    comboBoxSoLuong.addItem(i);
+                }
+            }
+        });
+        btnSearch.addActionListener(e->{
+            DAO_KhachHang daoKhachHang = new DAO_KhachHang();
+            KhachHang khachHang = new KhachHang();
+            khachHang = daoKhachHang.getKhachHangBySDT(txtSearch.getText());
+            txtCusName.setText(khachHang.getTenKH());
+
+            loadDataToTableDSPhieuByMaKH(tblDanhSachPhieu, khachHang.getMaKH());
+        });
+        btnAll.addActionListener(e->{
+            loadDataToTableDSPhieu(tblDanhSachPhieu);
+            txtSearch.setText("");
+            txtCusName.setText("");
+            txtMaPhieu.setText("");
+            txtTienCoc.setText("");
+            txtNhanVien.setText("");
+            comboBoxGio.setSelectedItem(7);
+            comboBoxPhut.setSelectedItem(0);
+            dateChooserNgayDen.setDate(new Date());
+        });
+
+        tblDanhSachPhieu.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                // Kiểm tra nếu có một dòng được chọn
+                int selectedRow = tblDanhSachPhieu.getSelectedRow();
+                if (selectedRow >= 0) {
+                    // Lấy dữ liệu từ dòng đã chọn
+                    Object id = tblDanhSachPhieu.getValueAt(selectedRow, 1);
+                    Object maKH = tblDanhSachPhieu.getValueAt(selectedRow, 2);
+                    PhieuDatBan_DAO phieuDatBanDao = new PhieuDatBan_DAO();
+                    PhieuDatBan phieuDatBan = phieuDatBanDao.getPhieuDatBanTheoMa((int) id);
+
+                    // Cập nhật các JTextField
+                    txtMaPhieu.setText(String.valueOf(phieuDatBan.getMaPhieuDatBan()));
+                    txtTienCoc.setText(String.valueOf(phieuDatBan.getTienCoc()));
+
+                    KhuVuc khuVuc = new DAO_Ban().getKhuVucByMaBan(phieuDatBan.getBan().getMaBan());
+
+                    comboBoxKhuVuc.setSelectedItem(khuVuc.getTenKhuVuc());
+                    comboBoxBan.setSelectedItem(phieuDatBan.getBan().getMaBan());
+                    comboBoxSoLuong.setSelectedItem(phieuDatBan.getSoLuongKhach());
+                    txtNhanVien.setText(phieuDatBan.getNhanVien().getTenNV());
+
+                    KhachHang khachHang = new KhachHang();
+                    khachHang = new DAO_KhachHang().getKhachHangTheoMa((Integer) maKH);
+                    txtCusName.setText(khachHang.getTenKH());
+
+                    LocalDateTime thoiGianDatBan = phieuDatBan.getThoiGianDatBan();
+                    int gioDat = thoiGianDatBan.getHour();
+                    comboBoxGio.setSelectedItem(gioDat);
+
+                    int phutDat = thoiGianDatBan.getMinute();
+                    comboBoxPhut.setSelectedItem(phutDat);
+
+                    Date dateDatBan = Date.from(thoiGianDatBan.atZone(ZoneId.systemDefault()).toInstant());
+                    dateChooserNgayDen.setDate(dateDatBan);
+
+                    String trangThai = (String) tblDanhSachPhieu.getValueAt(selectedRow, 5);
+                    if("Quá Hạn".equals(trangThai)){
+                        btnSuDung.setEnabled(false);
+                        btnHuyDat.setEnabled(false);
+                        btnThayDoi.setEnabled(false);
+                    }
+                    else {
+                        btnSuDung.setEnabled(true);
+                        btnHuyDat.setEnabled(true);
+                        btnThayDoi.setEnabled(true);
+                    }
+                }
+            }
+        });
+
     }
+
 
     /**
      *
@@ -659,6 +731,34 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
             });
         }
     }
+    public static void loadDataToTableDSPhieuByMaKH(JTable table, int maKH) {
+        PhieuDatBan_DAO phieuDatBanDao = new PhieuDatBan_DAO();
+        // Lấy danh sách phiếu đặt bàn theo maKH
+        List<PhieuDatBan> listPhieu = phieuDatBanDao.getAllPhieuDatBanByMaKH(maKH);
+
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        model.setRowCount(0);  // Xóa toàn bộ dữ liệu trong bảng trước khi thêm mới
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");  // Định dạng thời gian
+
+        int stt = 1;  // Biến để đánh số thứ tự
+        for (PhieuDatBan phieu : listPhieu) {
+            // Định dạng thời gian tạo phiếu và thời gian đặt bàn
+            String formattedNgayTaoPhieu = phieu.getNgayTaoPhieu().format(formatter);
+            String formattedThoiGianDatBan = phieu.getThoiGianDatBan().format(formatter);
+
+            // Thêm một dòng mới vào bảng với dữ liệu của phiếu đặt bàn
+            model.addRow(new Object[] {
+                    stt++,  // Số thứ tự
+                    phieu.getMaPhieuDatBan(),  // Mã phiếu đặt bàn
+                    phieu.getKhachHang().getMaKH(),  // Mã khách hàng
+                    formattedNgayTaoPhieu,  // Ngày tạo phiếu
+                    formattedThoiGianDatBan,  // Thời gian đặt bàn
+                    phieu.getTrangThai()  // Trạng thái
+            });
+        }
+    }
+
 
 }
 

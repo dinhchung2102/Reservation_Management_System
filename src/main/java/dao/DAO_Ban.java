@@ -2,6 +2,7 @@ package dao;
 
 import connectDB.ConnectDB;
 import entity.Ban;
+import entity.KhuVuc;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -107,5 +108,32 @@ public class DAO_Ban {
         }
         return ban;
     }
-    
+    public KhuVuc getKhuVucByMaBan(int maBan) {
+        KhuVuc khuVuc = null;
+        String sql = "SELECT K.tenKhuVuc, K.maKhuVuc FROM KhuVuc K JOIN Ban B ON K.maKhuVuc = B.maKhuVuc WHERE B.maBan = ?";
+
+        try (Connection connection = ConnectDB.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            // Set parameter for the query
+            preparedStatement.setInt(1, maBan);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+
+                if (resultSet.next()) {
+
+                    String tenKhuVuc = resultSet.getString("tenKhuVuc");
+                    int maKhuVuc = resultSet.getInt("maKhuVuc");
+
+
+                    khuVuc = new KhuVuc(maKhuVuc, tenKhuVuc, 0, "");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return khuVuc;
+    }
+
+
 }

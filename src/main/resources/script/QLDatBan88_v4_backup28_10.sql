@@ -118,6 +118,39 @@ CREATE TABLE ChiTietHoaDon (
 );
 GO
 
+
+--Tạo một SQL Server Agent Job để lên lịch chạy Stored Procedure này
+
+--Mở SQL Server Management Studio (SSMS) và kết nối với server.
+--Tìm đến SQL Server Agent trong Object Explorer.
+--Nhấn chuột phải vào Jobs và chọn New Job....
+--Đặt tên cho Job, ví dụ: UpdateStatusToOverdueJob.
+--Trong tab Steps, tạo một bước (Step) mới:
+--Đặt tên cho bước, ví dụ: UpdateStatusStep.
+--Chọn loại Transact-SQL script (T-SQL).
+--Nhập câu lệnh SQL sau vào phần Command: EXEC UpdateStatusToOverdue;.
+--Sau đó, vào tab Schedules để lên lịch cho job.
+--Bạn có thể lên lịch cho job này chạy mỗi ngày hoặc cứ sau một khoảng thời gian cố định (ví dụ: mỗi 5 phút, 30 phút).
+--Lưu lại Job.
+
+-----------------------------------------------------------------------
+--1. Mở SSMS và kết nối vào SQL Server của bạn.
+--2. Trong Object Explorer, tìm đến SQL Server Agent.
+--3. Nếu SQL Server Agent có dấu chấm than hoặc hiển thị màu đỏ, điều này có nghĩa là dịch vụ SQL Server Agent không chạy.
+--4. Nhấn chuột phải vào SQL Server Agent, sau đó chọn Start để khởi động lại dịch vụ.
+------------------------------------------------------
+CREATE PROCEDURE UpdateStatusToOverdue
+    AS
+BEGIN
+    -- Cập nhật trạng thái "quá hạn" cho các bản ghi có thời gian đặt bàn đã qua 30 phút
+UPDATE PhieuDatBan
+SET trangThai = N'Quá Hạn' -- Cập nhật trạng thái
+WHERE DATEDIFF(MINUTE, thoiGianDatBan, GETDATE()) > 30  -- Kiểm tra nếu thời gian đặt bàn đã quá 30 phút
+  AND trangThai = 'Chưa sử dụng'  -- Chỉ cập nhật nếu trạng thái là 'Chưa sử dụng'
+  AND trangThai != N'Quá Hạn';  -- Điều kiện tránh cập nhật lại trạng thái đã là 'Quá Hạn'
+END
+
+
 -- Thêm khu vực
 INSERT INTO KhuVuc (tenKhuVuc, soBan, moTa)
 VALUES

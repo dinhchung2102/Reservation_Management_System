@@ -93,14 +93,10 @@ public class MonAnDAO {
 
 				monAn = new MonAn(maMon, tenMon, giaTien, moTa);
 			}
-
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return monAn;
-
 	}
-
-
 }
