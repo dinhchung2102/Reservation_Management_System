@@ -59,7 +59,6 @@ public class ChiTietPhieuDatBan_DAO {
 			while (rs.next()) {
 				float donGia = rs.getFloat("donGia");
 				int soLuong = rs.getInt("soLuong");
-				float tienCoc = rs.getFloat("tienCoc");
 				float thanhTien = rs.getFloat("thanhTien");
 				MonAn monAn = monAn_DAO.getMonAnTheoMa(rs.getInt("maMon"));
 				PhieuDatBan phieuDatBan = phieuDatBan_DAO.getPhieuDatBanTheoMa(rs.getInt("maPhieuDatBan"));

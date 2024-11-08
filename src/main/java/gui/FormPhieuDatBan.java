@@ -1,10 +1,7 @@
 package gui;
 
 import com.toedter.calendar.JDateChooser;
-import dao.DAO_Ban;
-import dao.DAO_KhachHang;
-import dao.DAO_KhuVuc;
-import dao.PhieuDatBan_DAO;
+import dao.*;
 import entity.*;
 
 import javax.swing.*;
@@ -616,6 +613,9 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
                         btnHuyDat.setEnabled(true);
                         btnThayDoi.setEnabled(true);
                     }
+                    loadDataToTableCTPhieu(tblMonAn, (int) id);
+
+
                 }
             }
         });
@@ -728,6 +728,25 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
                     formattedNgayTaoPhieu,
                     formattedThoiGianDatBan,
                     phieu.getTrangThai()
+            });
+        }
+    }
+    public static void loadDataToTableCTPhieu(JTable table, int maPhieuDatBan) {
+        List<ChiTietPhieuDatBan> listCTPhieu = new ArrayList<>();
+        listCTPhieu = new ChiTietPhieuDatBan_DAO().getAllChiTietPhieuDatBanBangMaPhieuDatBan(maPhieuDatBan);
+
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        model.setRowCount(0);
+
+        int stt = 1;
+        for (ChiTietPhieuDatBan chiTietPhieuDatBan : listCTPhieu) {
+            model.addRow(new Object[] {
+                    stt++,
+                    chiTietPhieuDatBan.getMonAn().getMaMon(),
+                    chiTietPhieuDatBan.getMonAn().getTenMon(),
+                    chiTietPhieuDatBan.getDonGia(),
+                    chiTietPhieuDatBan.getSoLuong(),
+                    chiTietPhieuDatBan.getThanhTien(),
             });
         }
     }
