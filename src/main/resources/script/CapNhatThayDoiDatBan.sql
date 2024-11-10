@@ -1,7 +1,7 @@
-﻿CREATE DATABASE QLDatBan88_v4
+﻿CREATE DATABASE QLDatBan88_10_11_Ver2
 GO
 
-USE QLDatBan88_v4;
+USE QLDatBan88_10_11_Ver2;
 GO
 
 CREATE TABLE NhanVien (
@@ -80,7 +80,6 @@ CREATE TABLE ChiTietPhieuDatBan (
     maPhieuDatBan INT FOREIGN KEY REFERENCES PhieuDatBan(maPhieuDatBan) ON DELETE CASCADE,
     PRIMARY KEY (maMon, maPhieuDatBan)
 );
-
 GO
 
 CREATE TABLE KhuyenMai (
@@ -120,45 +119,30 @@ GO
 
 CREATE TABLE ThayDoiDatBan (
     maThayDoi INT IDENTITY(1,1) PRIMARY KEY,
-    FOREIGN KEY (maPhieuDatBan) REFERENCES PhieuDatBan(maPhieuDatBan)
-        ON DELETE CASCADE,                     -- Xóa thay đổi khi phiếu đặt bàn bị xóa
-    FOREIGN KEY (maNV) REFERENCES NhanVien(maNV)
-        ON DELETE SET NULL                     -- Đặt null khi nhân viên bị xóa
+    maPhieuDatBan INT, -- Define the column first
+    maNV INT,
     ngayThayDoi DATETIME DEFAULT GETDATE(),
     noiDungThayDoi NVARCHAR(255),
-)
+    
+    -- Now define the foreign keys
+    FOREIGN KEY (maPhieuDatBan) REFERENCES PhieuDatBan(maPhieuDatBan)
+        ON DELETE CASCADE, -- Xóa thay đổi khi phiếu đặt bàn bị xóa
+    FOREIGN KEY (maNV) REFERENCES NhanVien(maNV)
+        ON DELETE SET NULL -- Đặt null khi nhân viên bị xóa
+);
 
+GO
 
---Tạo một SQL Server Agent Job để lên lịch chạy Stored Procedure này
-
---Mở SQL Server Management Studio (SSMS) và kết nối với server.
---Tìm đến SQL Server Agent trong Object Explorer.
---Nhấn chuột phải vào Jobs và chọn New Job....
---Đặt tên cho Job, ví dụ: UpdateStatusToOverdueJob.
---Trong tab Steps, tạo một bước (Step) mới:
---Đặt tên cho bước, ví dụ: UpdateStatusStep.
---Chọn loại Transact-SQL script (T-SQL).
---Nhập câu lệnh SQL sau vào phần Command: EXEC UpdateStatusToOverdue;.
---Sau đó, vào tab Schedules để lên lịch cho job.
---Bạn có thể lên lịch cho job này chạy mỗi ngày hoặc cứ sau một khoảng thời gian cố định (ví dụ: mỗi 5 phút, 30 phút).
---Lưu lại Job.
-
------------------------------------------------------------------------
---1. Mở SSMS và kết nối vào SQL Server của bạn.
---2. Trong Object Explorer, tìm đến SQL Server Agent.
---3. Nếu SQL Server Agent có dấu chấm than hoặc hiển thị màu đỏ, điều này có nghĩa là dịch vụ SQL Server Agent không chạy.
---4. Nhấn chuột phải vào SQL Server Agent, sau đó chọn Start để khởi động lại dịch vụ.
-------------------------------------------------------
 CREATE PROCEDURE UpdateStatusToOverdue
-    AS
+AS
 BEGIN
     -- Cập nhật trạng thái "quá hạn" cho các bản ghi có thời gian đặt bàn đã qua 30 phút
-UPDATE PhieuDatBan
-SET trangThai = N'Quá Hạn' -- Cập nhật trạng thái
-WHERE DATEDIFF(MINUTE, thoiGianDatBan, GETDATE()) > 30  -- Kiểm tra nếu thời gian đặt bàn đã quá 30 phút
-  AND trangThai = N'Chưa sử dụng'  -- Chỉ cập nhật nếu trạng thái là 'Chưa sử dụng'
+    UPDATE PhieuDatBan
+    SET trangThai = N'Quá Hạn' -- Cập nhật trạng thái
+    WHERE DATEDIFF(MINUTE, thoiGianDatBan, GETDATE()) > 30  -- Kiểm tra nếu thời gian đặt bàn đã quá 30 phút
+      AND trangThai = N'Chưa sử dụng'  -- Chỉ cập nhật nếu trạng thái là 'Chưa sử dụng'
 END
-
+GO
 
 -- Thêm khu vực
 INSERT INTO KhuVuc (tenKhuVuc, soBan, moTa)
@@ -223,7 +207,9 @@ values
     (N'Lê Thị G', '0967890123', 'lethig@gmail.com', N'404 Phố STU, Quận 1'),
     (N'Trần Văn H', '0978901234', 'tranvanH@gmail.com', N'505 Phố VWX, Quận 2'),
     (N'Nguyễn Minh I', '0989012345', 'nguyenminhI@gmail.com', N'606 Phố YZ, Quận 3'),
-    (N'Võ Đình Chung', '0379595404', 'vodinhchung4@gmail.com', N'806 Nguyễn Chí Thanh, TDM')	;
+    (N'Võ Đình Chung', '0379595404', 'vodinhchung4@gmail.com', N'806 Nguyễn Chí Thanh, TDM');
+GO
+
 -- Thêm 20 món ăn
 INSERT INTO MonAn (tenMon, giaTien, moTa)
 VALUES
@@ -248,8 +234,8 @@ VALUES
     (N'Rau Muống Xào Tỏi', 30000, N'Rau muống xào tỏi thơm ngon.'),
     (N'Salad Trái Cây', 40000, N'Salad trái cây tươi mát, ngọt ngào.'),
     (N'Kem Tươi', 20000, N'Kem tươi mát lạnh, nhiều hương vị.');
-
 GO
+
 -- Thêm 5 khuyến mãi
 INSERT INTO KhuyenMai (tenKM, donHangToiThieu, giamGia, moTa)
 VALUES
@@ -258,5 +244,4 @@ VALUES
     (N'Giảm Giá 20%', 300000, 20, N'Giảm 20% cho đơn hàng từ 300,000đ.'),
     (N'Giảm Giá 15%', 150000, 15, N'Giảm 15% cho đơn hàng từ 150,000đ.'),
     (N'Tặng Kèm Nước Ngọt', 100000, 0, N'Tặng 1 chai nước ngọt cho đơn hàng từ 100,000đ.');
-
 GO

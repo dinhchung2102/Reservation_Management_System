@@ -6,7 +6,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
 
-import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -44,20 +43,13 @@ public class FormDatBan extends JFrame {
 	/**
 	 * 
 	 */
-	private NhanVien nhanVien;
-	private Color backgroundColor = Color.cyan;
-	Color whiteColor = new Color(255, 255, 255);
+	private final NhanVien nhanVien;
+    Color whiteColor = new Color(255, 255, 255);
 	Color whiteLight = new Color(250, 250, 250);
 	Font txtFieldFont = new Font("Montserrat", Font.BOLD, 16);
-	private JPanel pnlHeader;
-	private JLabel lblHeader;
-	private JPanel pnlInfor;
-	private JPanel pnlTTKhachHang;
-	private JPanel pnlSDT;
-	private JLabel lblSDT;
-	private JTextField txtSDT;
-	private JButton btnTimSDT;
-	private JPanel pnlLoaiKhachHang;
+    private final JTextField txtSDT;
+	private final JButton btnTimSDT;
+	private final JPanel pnlLoaiKhachHang;
 	private JLabel lblLoaiKH;
 	private JRadioButton radioBtnKHMoi;
 	private JRadioButton radioBtnKHVangLai;
@@ -210,6 +202,11 @@ public class FormDatBan extends JFrame {
 		mnuPhieuDatBan = new JMenu("   Phiếu đặt bàn   ");
 		mnuPhieuDatBan.setFont(fontMenu);
 		mniDSPhieuDatBan = new JMenuItem("Danh sách phiếu đặt");
+		mniDSPhieuDatBan.addActionListener(e->{
+			FormPhieuDatBan formPhieuDatBan = new FormPhieuDatBan(nhanVien);
+			formPhieuDatBan.setVisible(true);
+			this.dispose();
+		});
 		mniDSPhieuDatBan.setFont(fontMenuItem);
 		mniTimKiemPhieuDatBan = new JMenuItem("Tìm kiếm phiếu đặt");
 		mniTimKiemPhieuDatBan.setFont(fontMenuItem);
@@ -346,14 +343,15 @@ public class FormDatBan extends JFrame {
 		 * 
 		 * */
 
-		pnlHeader = new JPanel();
-		pnlHeader.setBackground(backgroundColor);
-		lblHeader = new JLabel("THÊM MỚI ĐẶT BÀN");
+        JPanel pnlHeader = new JPanel();
+        Color backgroundColor = Color.cyan;
+        pnlHeader.setBackground(backgroundColor);
+        JLabel lblHeader = new JLabel("THÊM MỚI ĐẶT BÀN");
 		lblHeader.setFont(new Font("Montserrat", Font.BOLD, 40));
 		pnlHeader.add(lblHeader);
 
 		// Panel chứa thông tin thêm đặt bàn mới//
-		pnlInfor = new JPanel();
+        JPanel pnlInfor = new JPanel();
 		pnlInfor.setLayout(new BoxLayout(pnlInfor, BoxLayout.X_AXIS));
 		pnlInfor.setBackground(backgroundColor);
 
@@ -365,16 +363,16 @@ public class FormDatBan extends JFrame {
 		 * Panel thông tin khách hàng
 		 */
 
-		pnlTTKhachHang = new JPanel();
+        JPanel pnlTTKhachHang = new JPanel();
 		pnlTTKhachHang.setLayout(new BoxLayout(pnlTTKhachHang, BoxLayout.Y_AXIS));
 		pnlTTKhachHang.setPreferredSize(new Dimension(150, 300));
 		pnlTTKhachHang.setBackground(backgroundColor);
 
 		// =====================TÌM SDT KHÁCH HÀNG==========================
-		pnlSDT = new JPanel();
+        JPanel pnlSDT = new JPanel();
 		pnlSDT.setBackground(backgroundColor);
 		pnlSDT.setLayout(new BoxLayout(pnlSDT, BoxLayout.X_AXIS));
-		lblSDT = new JLabel("ĐIỆN THOẠI: ");
+        JLabel lblSDT = new JLabel("ĐIỆN THOẠI: ");
 		lblSDT.setFont(txtFieldFont);
 		txtSDT = new JTextField();
 		txtSDT.setFont(txtFieldFont);

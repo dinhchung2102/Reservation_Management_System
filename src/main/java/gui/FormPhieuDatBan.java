@@ -272,6 +272,11 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
         };
         DefaultTableModel modelTable = new DefaultTableModel(data, columnsName);
         JTable tblDanhSachPhieu = new JTable(modelTable);
+        tblDanhSachPhieu.setBackground(Color.white);
+        tblDanhSachPhieu.setForeground(Color.blue);
+        tblDanhSachPhieu.setFont(new Font("Montserrat", Font.ITALIC, 16));
+        tblDanhSachPhieu.setDefaultEditor(Object.class, null);
+        tblDanhSachPhieu.setRowHeight(30);
 
         JTableHeader tableHeader = tblDanhSachPhieu.getTableHeader();
         Font headerFont = new Font("Arial", Font.BOLD, 16);
@@ -537,6 +542,7 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
                 comboBoxSoLuong.addItem(i);
             }
         });
+        //===========================================Xu ly su kien=========================
         comboBoxBan.addActionListener(e -> {
             comboBoxSoLuong.removeAllItems();
             if (comboBoxBan.getItemCount() > 0) {
@@ -546,6 +552,7 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
                 }
             }
         });
+
         btnSearch.addActionListener(e->{
             DAO_KhachHang daoKhachHang = new DAO_KhachHang();
             KhachHang khachHang = new KhachHang();
@@ -554,6 +561,7 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
 
             loadDataToTableDSPhieuByMaKH(tblDanhSachPhieu, khachHang.getMaKH());
         });
+
         btnAll.addActionListener(e->{
             loadDataToTableDSPhieu(tblDanhSachPhieu);
             txtSearch.setText("");
@@ -564,6 +572,26 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
             comboBoxGio.setSelectedItem(7);
             comboBoxPhut.setSelectedItem(0);
             dateChooserNgayDen.setDate(new Date());
+        });
+
+        btnSuDung.addActionListener(e->{
+            PhieuDatBan phieuDatBan = new PhieuDatBan_DAO().getPhieuDatBanTheoMa(Integer.parseInt(txtMaPhieu.getText()));
+            new DAO_Ban().capNhatTrangThaiBanById(phieuDatBan.getBan().getMaBan(), true);
+            new PhieuDatBan_DAO().capNhatTrangThaiByMaPhieu(Integer.parseInt(txtMaPhieu.getText()), "Đã sử dụng");
+            this.dispose();
+            FormManHinhChinh formManHinhChinh = new FormManHinhChinh(nhanVien);
+            formManHinhChinh.setVisible(true);
+        });
+
+        btnHuyDat.addActionListener(e->{
+            PhieuDatBan phieuDatBan = new PhieuDatBan_DAO().getPhieuDatBanTheoMa(Integer.parseInt(txtMaPhieu.getText()));
+            ThayDoiDatBan thayDoiDatBan = new ThayDoiDatBan(phieuDatBan, nhanVien, LocalDateTime.now() , "Hủy Đặt Bàn");
+
+            if(new DAO_ThayDoiDatBan().huyDatBan(thayDoiDatBan)){
+                new PhieuDatBan_DAO().capNhatTrangThaiByMaPhieu(phieuDatBan.getMaPhieuDatBan(), "Đã Hủy");
+                JOptionPane.showMessageDialog(this, "Hủy Đặt Bàn thành công. MÃ ĐẶT BÀN: " + phieuDatBan.getMaPhieuDatBan());
+                loadDataToTableDSPhieu(tblDanhSachPhieu);
+            }
         });
 
         tblDanhSachPhieu.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -603,26 +631,22 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
                     dateChooserNgayDen.setDate(dateDatBan);
 
                     String trangThai = (String) tblDanhSachPhieu.getValueAt(selectedRow, 5);
-                    if("Quá Hạn".equals(trangThai)){
-                        btnSuDung.setEnabled(false);
-                        btnHuyDat.setEnabled(false);
-                        btnThayDoi.setEnabled(false);
-                    }
-                    else {
+                    if("Chưa sử dụng".equals(trangThai)){
                         btnSuDung.setEnabled(true);
                         btnHuyDat.setEnabled(true);
                         btnThayDoi.setEnabled(true);
                     }
+                    else {
+                        btnSuDung.setEnabled(false);
+                        btnHuyDat.setEnabled(false);
+                        btnThayDoi.setEnabled(false);
+                    }
                     loadDataToTableCTPhieu(tblMonAn, (int) id);
-
-
                 }
             }
         });
 
     }
-
-
     /**
      *
      *
@@ -675,9 +699,7 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
             }
         }
     }
-
-    private void getDataToComboBox(JComboBox<String> cbbKhuVuc, JComboBox<Integer> cbbBan,
-                                   JComboBox<Integer> cbbSoKhach, String khuVuc, int maBan) {
+    private void getDataToComboBox(JComboBox<String> cbbKhuVuc, JComboBox<Integer> cbbBan,JComboBox<Integer> cbbSoKhach, String khuVuc, int maBan) {
 
         DAO_KhuVuc dao_KhuVuc = new DAO_KhuVuc();
         List<KhuVuc> listKhuVuc = new ArrayList<KhuVuc>();
@@ -777,7 +799,5 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
             });
         }
     }
-
-
 }
 

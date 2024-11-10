@@ -177,4 +177,31 @@ public class PhieuDatBan_DAO {
 	    
 	    return maPhieuDatBan; // Trả về mã phiếu đặt bàn vừa được thêm
 	}
+	public void capNhatTrangThaiByMaPhieu(int maPhieuDatBan, String trangThaiMoi) {
+		// Kết nối cơ sở dữ liệu
+		Connection con = ConnectDB.getConnection();
+
+		// Câu lệnh SQL cập nhật trạng thái theo mã phiếu đặt bàn
+		String query = "UPDATE PhieuDatBan SET trangThai = ? WHERE maPhieuDatBan = ?";
+
+		try (PreparedStatement pstm = con.prepareStatement(query)) {
+			// Thiết lập tham số cho câu lệnh SQL
+			pstm.setString(1, trangThaiMoi); // Trạng thái mới
+			pstm.setInt(2, maPhieuDatBan);  // Mã phiếu đặt bàn
+
+			// Thực thi câu lệnh cập nhật
+			int rowsAffected = pstm.executeUpdate();
+
+			// Kiểm tra xem có dòng nào bị ảnh hưởng không
+			if (rowsAffected > 0) {
+				System.out.println("Cập nhật trạng thái thành công cho phiếu đặt bàn có mã: " + maPhieuDatBan);
+			} else {
+				System.out.println("Không tìm thấy phiếu đặt bàn với mã: " + maPhieuDatBan);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Lỗi khi cập nhật trạng thái phiếu đặt bàn.");
+		}
+	}
+
 }
