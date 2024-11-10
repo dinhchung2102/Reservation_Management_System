@@ -6,8 +6,11 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -654,6 +657,57 @@ public class FormDatBan extends JFrame {
 		dateChooserNgayDen.setBackground(whiteLight);
 		dateChooserNgayDen.setEnabled(false);
 		dateChooserNgayDen.setMinSelectableDate(new Date());
+
+		dateChooserNgayDen.getDateEditor().addPropertyChangeListener(evt -> {
+			if (evt.getPropertyName().equals("date")) {
+				Date selectedDate = dateChooserNgayDen.getDate();
+				if (selectedDate != null) {
+					LocalDate selectedLocalDate = selectedDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+					LocalDate currentDate = LocalDate.now();
+
+					// Nếu người dùng chọn ngày hôm nay
+					if (selectedLocalDate.equals(currentDate)) {
+						// Lấy giờ và phút hiện tại
+						LocalTime currentTime = LocalTime.now();
+						int currentHour = currentTime.getHour();
+						int currentMinute = currentTime.getMinute();
+
+						// Xóa hết các mục hiện tại trong comboBox
+						comboBoxGio.removeAllItems();
+						comboBoxPhut.removeAllItems();
+
+						// Thêm các giờ từ giờ hiện tại đến 21
+						for (int i = currentHour; i <= 21; i++) {
+							comboBoxGio.addItem(i);
+						}
+
+						// Thêm các phút từ phút hiện tại đến 59
+						for (int i = currentMinute; i <= 59; i++) {
+							comboBoxPhut.addItem(i);
+						}
+
+						// Kích hoạt comboBox giờ và phút
+						comboBoxGio.setEnabled(true);
+						comboBoxPhut.setEnabled(true);
+					} else {
+						// Nếu chọn ngày khác hôm nay, bỏ hạn chế và cho phép chọn tất cả giờ và phút
+						comboBoxGio.removeAllItems();
+						comboBoxPhut.removeAllItems();
+
+						for (int i = 7; i <= 21; i++) {
+							comboBoxGio.addItem(i);
+						}
+						for (int i = 0; i <= 59; i++) {
+							comboBoxPhut.addItem(i);
+						}
+
+						// Kích hoạt comboBox giờ và phút
+						comboBoxGio.setEnabled(true);
+						comboBoxPhut.setEnabled(true);
+					}
+				}
+			}
+		});
 
 		radioBtnSuDungNgay.addActionListener(e -> {
 			comboBoxGio.setBackground(whiteLight);
