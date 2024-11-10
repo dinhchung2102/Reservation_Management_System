@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
 
+import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -658,56 +659,6 @@ public class FormDatBan extends JFrame {
 		dateChooserNgayDen.setEnabled(false);
 		dateChooserNgayDen.setMinSelectableDate(new Date());
 
-		dateChooserNgayDen.getDateEditor().addPropertyChangeListener(evt -> {
-			if (evt.getPropertyName().equals("date")) {
-				Date selectedDate = dateChooserNgayDen.getDate();
-				if (selectedDate != null) {
-					LocalDate selectedLocalDate = selectedDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-					LocalDate currentDate = LocalDate.now();
-
-					// Nếu người dùng chọn ngày hôm nay
-					if (selectedLocalDate.equals(currentDate)) {
-						// Lấy giờ và phút hiện tại
-						LocalTime currentTime = LocalTime.now();
-						int currentHour = currentTime.getHour();
-						int currentMinute = currentTime.getMinute();
-
-						// Xóa hết các mục hiện tại trong comboBox
-						comboBoxGio.removeAllItems();
-						comboBoxPhut.removeAllItems();
-
-						// Thêm các giờ từ giờ hiện tại đến 21
-						for (int i = currentHour; i <= 21; i++) {
-							comboBoxGio.addItem(i);
-						}
-
-						// Thêm các phút từ phút hiện tại đến 59
-						for (int i = currentMinute; i <= 59; i++) {
-							comboBoxPhut.addItem(i);
-						}
-
-						// Kích hoạt comboBox giờ và phút
-						comboBoxGio.setEnabled(true);
-						comboBoxPhut.setEnabled(true);
-					} else {
-						// Nếu chọn ngày khác hôm nay, bỏ hạn chế và cho phép chọn tất cả giờ và phút
-						comboBoxGio.removeAllItems();
-						comboBoxPhut.removeAllItems();
-
-						for (int i = 7; i <= 21; i++) {
-							comboBoxGio.addItem(i);
-						}
-						for (int i = 0; i <= 59; i++) {
-							comboBoxPhut.addItem(i);
-						}
-
-						// Kích hoạt comboBox giờ và phút
-						comboBoxGio.setEnabled(true);
-						comboBoxPhut.setEnabled(true);
-					}
-				}
-			}
-		});
 
 		radioBtnSuDungNgay.addActionListener(e -> {
 			comboBoxGio.setBackground(whiteLight);
@@ -1054,7 +1005,8 @@ public class FormDatBan extends JFrame {
 			} else if (!txtEmail.getText().isEmpty() && !isValidEmail(txtEmail.getText())) {
 				// Nếu email không rỗng thì kiểm tra định dạng
 				JOptionPane.showMessageDialog(this, "Email sai định dạng");
-			} else {
+			}
+			else {
 				// Nếu tất cả đều hợp lệ
 				if (radioBtnDungSau.isSelected()) {
 
@@ -1086,7 +1038,7 @@ public class FormDatBan extends JFrame {
 							}
 
 						} else {
-							JOptionPane.showMessageDialog(this, "VUI LÒNG CHỌN MỘT NGÀY!!!");
+							JOptionPane.showMessageDialog(this, "NGÀY ĐẶT KHÔNG HỢP LỆ!!!");
 						}
 
 					} else if (radioBtnKHVangLai.isSelected()) {
@@ -1116,7 +1068,7 @@ public class FormDatBan extends JFrame {
 							JOptionPane.showMessageDialog(this, "ĐẶT BÀN THÀNH CÔNG");
 
 						} else {
-							JOptionPane.showMessageDialog(this, "VUI LÒNG CHỌN MỘT NGÀY!!!");
+							JOptionPane.showMessageDialog(this, "NGÀY ĐẶT KHÔNG HỢP LỆ!!!");
 						}
 
 					}
@@ -1309,6 +1261,25 @@ public class FormDatBan extends JFrame {
 	private boolean kiemTraNgayDat(JDateChooser dateChooserNgayDen) {
 		Date selectedDate = dateChooserNgayDen.getDate();
 		if (selectedDate != null) {
+			if(LocalDate.from(dateChooserNgayDen.getDate().toInstant().atZone(ZoneId.systemDefault())).equals(LocalDate.now())){
+				if((comboBoxGio.getSelectedItem() != null &&
+						(Integer) comboBoxGio.getSelectedItem() < LocalTime.now().getHour())){
+					return  false;
+				}
+				else if ((comboBoxGio.getSelectedItem() != null &&
+						(Integer) comboBoxGio.getSelectedItem() == LocalTime.now().getHour())){
+					if ((comboBoxPhut.getSelectedItem() != null &&
+							(Integer) comboBoxPhut.getSelectedItem() <= LocalTime.now().getMinute())){
+						return  false;
+					}
+					else {
+						return  true;
+					}
+				} else if ((comboBoxGio.getSelectedItem() != null &&
+						(Integer) comboBoxGio.getSelectedItem() > LocalTime.now().getHour())){
+						return  true;
+				}
+			}
 			return true;
 		}
 		return false;
