@@ -25,8 +25,11 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import dao.DAO_Ban;
+import dao.NhanVien_DAO;
+import dao.TaiKhoan_DAO;
 import entity.Ban;
 import entity.NhanVien;
+import entity.TaiKhoan;
 
 /*
  * 
@@ -197,6 +200,18 @@ public class FormManHinhChinh extends JFrame implements ActionListener {
 		mnuTaiKhoan.setIcon(iconTaiKhoan);
 		mniThongKeDoanhThu = new JMenuItem("Thống kê doanh thu");
 		mniThongKeDoanhThu.setFont(fontMenuItem);
+		mniThongKeDoanhThu.addActionListener(e->{
+			ThongKeDoanhThuGUI tkNew = new ThongKeDoanhThuGUI();
+			tkNew.setVisible(true);
+			this.dispose();
+		});
+		JMenuItem mniThongKeDoanhThuTheoCa = new JMenuItem(("Thống kê doanh thu theo ca"));
+		mniThongKeDoanhThuTheoCa.setFont(fontMenuItem);
+		mniThongKeDoanhThuTheoCa.addActionListener(e->{
+			ThongKeDoanhThuTheoCaGUI tkNew = new ThongKeDoanhThuTheoCaGUI();
+			tkNew.setVisible(true);
+			this.dispose();
+		});
         JMenuItem mniThemNhanVien = new JMenuItem("Thêm nhân viên");
 		mniThemNhanVien.setFont(fontMenuItem);
         JMenuItem mniTaoTaiKhoan = new JMenuItem("Tạo tài khoản");
@@ -207,6 +222,8 @@ public class FormManHinhChinh extends JFrame implements ActionListener {
 		mniDangXuat.setFont(fontMenuItem);
 		mnuTaiKhoan.add(mniThongKeDoanhThu);
 		mnuTaiKhoan.addSeparator();
+		mnuTaiKhoan.add(mniThongKeDoanhThuTheoCa);
+		mnuTaiKhoan.addSeparator();
 		mnuTaiKhoan.add(mniThemNhanVien);
 		mnuTaiKhoan.addSeparator();
 		mnuTaiKhoan.add(mniTaoTaiKhoan);
@@ -215,6 +232,9 @@ public class FormManHinhChinh extends JFrame implements ActionListener {
 		mnuTaiKhoan.addSeparator();
 		mnuTaiKhoan.add(mniDangXuat);
 
+		mniTaoTaiKhoan.addActionListener(e->{
+			new TaoTaiKhoan_GUI(new TaiKhoan_DAO().getTaiKhoanByMaNhanVien(nhanVien.getMaNV())).setVisible(true);
+		});
 		mniThongKeDoanhThu.addActionListener(this);
 		mniThongTinTaiKhoan.addActionListener(this);
 		mniDangXuat.addActionListener(this);
@@ -353,8 +373,12 @@ public class FormManHinhChinh extends JFrame implements ActionListener {
 		} else if (o.equals(mniThongKeDoanhThu)) {
 
 		} else if (o.equals(mniThongTinTaiKhoan)) {
-
-		} else if (o.equals(mniDangXuat)) {
+			TaiKhoan_DAO daoTK = new TaiKhoan_DAO();
+			TaiKhoan taiKhoan = daoTK.getTaiKhoanByMaNhanVien(nhanVien.getMaNV());
+			ThongTinTaiKhoan_GUI newTT = new ThongTinTaiKhoan_GUI(taiKhoan);
+			newTT.setVisible(true);
+			this.dispose();
+		}else if (o.equals(mniDangXuat)) {
 			int response = JOptionPane.showConfirmDialog(this, 
 		            "Bạn có chắc chắn muốn đăng xuất?", 
 		            "Xác nhận đăng xuất", 
@@ -448,6 +472,17 @@ public class FormManHinhChinh extends JFrame implements ActionListener {
 			tablePanel.add(Box.createVerticalStrut(100));
 			tablePanel.add(btnDatMon);
 			tablePanel.add(btnXuatHD);
+			btnDatMon.addActionListener(e->{
+				System.out.print("\nDat Mon");
+				PhieuDatMonGui newGui = new PhieuDatMonGui();
+				newGui.setVisible(true);
+				this.dispose();
+			});
+			btnXuatHD.addActionListener(e->{
+				System.out.print("\nXuất hóa đơn");
+				XuatHoaDon_GUI hdGui = new XuatHoaDon_GUI(new TaiKhoan_DAO().getTaiKhoanByMaNhanVien(nhanVien.getMaNV()));
+				hdGui.setVisible(true);
+			});
 			
 		}
 

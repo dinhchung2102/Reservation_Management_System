@@ -1064,6 +1064,9 @@ public class FormDatBan extends JFrame {
 								chiTietPhieuDatBan_DAO.themChiTietPhieuDatBan(chiTietPhieuDatBan);
 							}
 							JOptionPane.showMessageDialog(this, "ĐẶT BÀN THÀNH CÔNG");
+							this.dispose();
+							FormPhieuDatBan newFrm = new FormPhieuDatBan(nhanVien);
+							newFrm.setVisible(true);
 
 						} else {
 							JOptionPane.showMessageDialog(this, "NGÀY ĐẶT KHÔNG HỢP LỆ!!!");

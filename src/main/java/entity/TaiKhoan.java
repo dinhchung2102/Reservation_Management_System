@@ -38,4 +38,8 @@ public class TaiKhoan {
     public TaiKhoan() {
     }
 
+    public Object[] getObjTaiKhoan() {
+        Object[] x = { getTenDangNhap(), getMatKhau(), getLoaiTaiKhoan(), getNhanVien().getMaNV(), getNhanVien().getTenNV()};
+        return x;
+    }
 }

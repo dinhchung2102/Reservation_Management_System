@@ -3,10 +3,11 @@ package gui;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Date;
+import java.util.Date;
 import java.text.SimpleDateFormat;
 
 import javax.swing.BoxLayout;
@@ -19,20 +20,20 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
+import dao.NhanVien_DAO;
 import dao.TaiKhoan_DAO;
-import entity.NhanVien;
 import entity.TaiKhoan;
 
 public class ThongTinTaiKhoan_GUI extends JFrame implements ActionListener {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	private Font fontMenu;
 	private Font fontMenuItem;
 	private JMenuBar mnuMenuBar;
-	private JMenu mnuDatBan;
 	private JMenu mnuPhieuDatBan;
+	private JMenuItem mniDatBan;
 	private JMenuItem mniDSPhieuDatBan;
 	private JMenuItem mniTimKiemPhieuDatBan;
 	private JMenu mnuHoaDon;
@@ -56,6 +57,7 @@ public class ThongTinTaiKhoan_GUI extends JFrame implements ActionListener {
 	private JMenuItem mniDangXuat;
 
 	private TaiKhoan_DAO taiKhoan_DAO = new TaiKhoan_DAO();
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
 	private TaiKhoan taiKhoan;
 	private JPanel pnlThongTinTaiKhoan;
@@ -75,42 +77,39 @@ public class ThongTinTaiKhoan_GUI extends JFrame implements ActionListener {
 	private JPanel pnlDiaChi;
 	private JLabel lblDiaChi;
 
-	public ThongTinTaiKhoan_GUI(NhanVien nhanVien) {
-		setTitle("Quản lý đặt bàn");
-        setExtendedState(JFrame.MAXIMIZED_BOTH); // Full màn hình
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-		setVisible(true);
+	public ThongTinTaiKhoan_GUI() {
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setLocationRelativeTo(null);
+		setResizable(false);
+		setExtendedState(JFrame.MAXIMIZED_BOTH); // Full màn hình
+		setTitle("CHƯƠNG TRÌNH QUẢN LÍ ĐẶT BÀN TRONG NHÀ HÀNG");
+
 		// tạo font cho JMenu
-		fontMenu = new Font(Font.SERIF, Font.BOLD, 25);
+		fontMenu = new Font(Font.SERIF, Font.BOLD, 30);
 		// tạo font cho JMenuItem
-		fontMenuItem = new Font(Font.SERIF, Font.PLAIN, 25);
+		fontMenuItem = new Font(Font.SERIF, Font.PLAIN, 30);
 
 		// Tạo menubar
 		mnuMenuBar = new JMenuBar();
 		mnuMenuBar.setBackground(Color.white);
 		this.setJMenuBar(mnuMenuBar);
 
-		// Tạo menu đặt bàn
-		mnuDatBan = new JMenu("     Đặt bàn     ");
-		mnuDatBan.setFont(fontMenu);
-		mnuDatBan.setOpaque(true);
-		mnuDatBan.setBackground(Color.lightGray);
-		mnuDatBan.setBorder(new LineBorder(Color.BLACK, 1));
-
-		mnuDatBan.addActionListener(this);
-
 		// Tạo menu phiếu đặt bàn
 		mnuPhieuDatBan = new JMenu("   Phiếu đặt bàn   ");
 		mnuPhieuDatBan.setFont(fontMenu);
+		mniDatBan = new JMenuItem("Đặt bàn");
+		mniDatBan.setFont(fontMenuItem);
 		mniDSPhieuDatBan = new JMenuItem("Danh sách phiếu đặt");
 		mniDSPhieuDatBan.setFont(fontMenuItem);
 		mniTimKiemPhieuDatBan = new JMenuItem("Tìm kiếm phiếu đặt");
 		mniTimKiemPhieuDatBan.setFont(fontMenuItem);
+		mnuPhieuDatBan.add(mniDatBan);
+		mnuPhieuDatBan.addSeparator();
 		mnuPhieuDatBan.add(mniDSPhieuDatBan);
 		mnuPhieuDatBan.addSeparator();
 		mnuPhieuDatBan.add(mniTimKiemPhieuDatBan);
 
+		mniDatBan.addActionListener(this);
 		mniDSPhieuDatBan.addActionListener(this);
 		mniTimKiemPhieuDatBan.addActionListener(this);
 
@@ -176,7 +175,7 @@ public class ThongTinTaiKhoan_GUI extends JFrame implements ActionListener {
 
 		// Tạo menu tài khoản
 		mnuTaiKhoan = new JMenu();
-		ImageIcon iconTaiKhoan = new ImageIcon("image//userIcon.png");
+		ImageIcon iconTaiKhoan = new ImageIcon("img//tai_khoan.png");
 		iconTaiKhoan.setImage(iconTaiKhoan.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH));
 		mnuTaiKhoan.setFont(new Font(Font.SERIF, Font.ITALIC, 25));
 		mnuTaiKhoan.setIcon(iconTaiKhoan);
@@ -201,10 +200,11 @@ public class ThongTinTaiKhoan_GUI extends JFrame implements ActionListener {
 		mnuTaiKhoan.add(mniDangXuat);
 
 		mniThongKeDoanhThu.addActionListener(this);
+		mniThemNhanVien.addActionListener(this);
+		mniTaoTaiKhoan.addActionListener(this);
 		mniThongTinTaiKhoan.addActionListener(this);
 		mniDangXuat.addActionListener(this);
 
-		mnuMenuBar.add(mnuDatBan);
 		mnuMenuBar.add(mnuPhieuDatBan);
 		mnuMenuBar.add(mnuHoaDon);
 		mnuMenuBar.add(mnuKhuyenMai);
@@ -215,8 +215,8 @@ public class ThongTinTaiKhoan_GUI extends JFrame implements ActionListener {
 
 		// Jpanel thông tin tài khoản
 		pnlThongTinTaiKhoan = new JPanel();
-		pnlThongTinTaiKhoan.setLayout(new BoxLayout(pnlThongTinTaiKhoan, BoxLayout.Y_AXIS));
-		newfont = new Font("Arial", Font.PLAIN, 30);
+		pnlThongTinTaiKhoan.setLayout(new GridLayout(12, 1));
+		newfont = new Font(Font.SERIF, Font.PLAIN, 30);
 
 		pnlUsername = new JPanel();
 		lblUsername = new JLabel("Username: ");
@@ -267,14 +267,21 @@ public class ThongTinTaiKhoan_GUI extends JFrame implements ActionListener {
 	}
 
 	public ThongTinTaiKhoan_GUI(TaiKhoan tk) {
-		
+		this();
 		this.taiKhoan = tk;
 		mnuTaiKhoan.setText("Nhân viên: " + taiKhoan.getNhanVien().getTenNV());
+
+
+		if(!taiKhoan.getLoaiTaiKhoan().equals("quanli")) {
+			mniThemNhanVien.setEnabled(false);
+			mniTaoTaiKhoan.setEnabled(false);
+		}
+
+
 		lblUsername.setText("Username: " + taiKhoan.getTenDangNhap());
 		lblTenNhanVien.setText("Tên nhân viên: " + taiKhoan.getNhanVien().getTenNV());
 		lblGioiTinh.setText("Giới tính: " + taiKhoan.getNhanVien().getGioiTinh());
 		Date ngaySinh = taiKhoan.getNhanVien().getNgaySinh();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String stringNgaySinh = sdf.format(ngaySinh);
 		lblNgaySinh.setText("Ngày sinh: " + stringNgaySinh);
 		lblSoDienThoai.setText("Số điện thoại: " + taiKhoan.getNhanVien().getSoDT());
@@ -285,23 +292,24 @@ public class ThongTinTaiKhoan_GUI extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object o = e.getSource();
-		if (o.equals(mnuDatBan)) {
+		if (o.equals(mniDatBan)) {
+			this.dispose();
+			new FormManHinhChinh(taiKhoan.getNhanVien());
 		} else if (o.equals(mniDSPhieuDatBan)) {
-
+			this.dispose();
 		} else if (o.equals(mniTimKiemPhieuDatBan)) {
 
 		} else if (o.equals(mniXuatHoaDon)) {
-
+			this.dispose();
+			new XuatHoaDon_GUI(taiKhoan);
 		} else if (o.equals(mniDSHoaDon)) {
-
-		} else if (o.equals(mniXuatHoaDon)) {
-
-		} else if (o.equals(mniDSHoaDon)) {
-
+			this.dispose();
+			new DanhSachHoaDon_GUI(taiKhoan);
 		} else if (o.equals(mniDSKhuyenMai)) {
-
+			this.dispose();
+			new KhuyenMaiGUI(new NhanVien_DAO().getNhanVienTheoMa(taiKhoan.getNhanVien().getMaNV()));
 		} else if (o.equals(mniThemKhuyenMai)) {
-
+			this.dispose();
 		} else if (o.equals(mnuKhachHang)) {
 
 		} else if (o.equals(mnuBan)) {
@@ -312,14 +320,16 @@ public class ThongTinTaiKhoan_GUI extends JFrame implements ActionListener {
 
 		} else if (o.equals(mniThongKeDoanhThu)) {
 
+		} else if (o.equals(mniThemNhanVien)) {
+			this.dispose();
+		} else if (o.equals(mniTaoTaiKhoan)) {
+			this.dispose();
 		} else if (o.equals(mniThongTinTaiKhoan)) {
 			this.dispose();
-			ThongTinTaiKhoan_GUI thongTinTaiKhoan_GUI = new ThongTinTaiKhoan_GUI(taiKhoan);
-			thongTinTaiKhoan_GUI.setVisible(true);
+			new ThongTinTaiKhoan_GUI(taiKhoan);
 		} else if (o.equals(mniDangXuat)) {
 			this.dispose();
-			DangNhap_GUI dangNhap_GUI = new DangNhap_GUI();
-			dangNhap_GUI.setVisible(true);
+			new DangNhap_GUI();
 		}
 	}
 }

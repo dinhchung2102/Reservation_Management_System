@@ -527,6 +527,10 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
         getContentPane().add(pnlPhieuDatBan);
 
         getDataToComboBox(comboBoxKhuVuc, comboBoxBan, comboBoxSoLuong, "Lầu 1", 1);
+
+        btnThayDoi.addActionListener(e->{
+            System.out.print("Thay đổi dat ban");
+        });
         comboBoxKhuVuc.addActionListener(e -> {
             List<Ban> bans;
             bans = new DAO_Ban().getBansByKhuVuc((String) comboBoxKhuVuc.getSelectedItem());
@@ -645,7 +649,6 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
                 }
             }
         });
-
     }
     /**
      *

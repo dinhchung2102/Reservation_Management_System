@@ -72,4 +72,59 @@ public class KhuyenMaiDAO {
             e.printStackTrace();
         }
     }
+
+    public KhuyenMai getKhuyenMaiByMaKM(int maKM) {
+        KhuyenMai khuyenMai = null;
+        String query = "SELECT * FROM KhuyenMai WHERE maKM = ?";
+
+        try (Connection conn = ConnectDB.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, maKM);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                khuyenMai = new KhuyenMai(
+                        rs.getInt("maKM"),
+                        rs.getString("tenKM"),
+                        rs.getDouble("donHangToiThieu"),
+                        rs.getDouble("giamGia"),
+                        rs.getString("moTa")
+                );
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return khuyenMai;
+    }
+
+    public KhuyenMai getKhuyenMaiTheoTen(String tenKM) {
+        KhuyenMai khuyenMai = null;
+
+        Connection con = ConnectDB.getConnection();
+        String query = "select * from KhuyenMai where tenKM = ?";
+        try {
+            PreparedStatement pstm = con.prepareStatement(query);
+            pstm.setString(1, tenKM);
+            ResultSet rs = pstm.executeQuery();
+            while (rs.next()) {
+                int maKhuyenMai = rs.getInt("maKM");
+                String tenKhuyenMai = rs.getString("tenKM");
+                float donHangToiThieu = rs.getFloat("donHangToiThieu");
+                float giamGia = rs.getFloat("giamGia");
+                String moTa = rs.getString("moTa");
+
+                khuyenMai = new KhuyenMai(maKhuyenMai, tenKhuyenMai, donHangToiThieu, giamGia, moTa);
+            }
+
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return khuyenMai;
+
+    }
+
 }

@@ -14,6 +14,7 @@ public class MonAn {
         this.moTa = moTa;
     }
 
+
     public int getMaMon() {
         return maMon;
     }
