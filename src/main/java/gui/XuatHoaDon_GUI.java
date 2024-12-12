@@ -626,6 +626,8 @@ public class XuatHoaDon_GUI extends JFrame implements ActionListener {
                     ChiTietHoaDon chiTietHoaDon = new ChiTietHoaDon(new HoaDon_DAO().getHoaDonTheoMa(maHD), phieuDatBan, khuyenMai, thue_DAO.getThueTheoMa(1), tongTien, tongTienCuoi);
                     new ChiTietHoaDon_DAO().themChiTietHoaDon(chiTietHoaDon);
                     JOptionPane.showMessageDialog(this, "ĐÃ TẠO HÓA ĐƠN");
+                    new DAO_Ban().capNhatTrangThaiBanById(phieuDatBan.getBan().getMaBan(), false);
+                    new FormManHinhChinh(taiKhoan.getNhanVien()).setVisible(true);
                     this.dispose();
                 }
             }
