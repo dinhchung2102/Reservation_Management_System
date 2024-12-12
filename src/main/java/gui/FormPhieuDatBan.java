@@ -169,13 +169,17 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
         mniThemMonAn.addActionListener(this);
 
         // Tạo menu tài khoản
-        JMenu mnuTaiKhoan = new JMenu();
+        JMenu mnuTaiKhoan = new JMenu(nhanVien.getTenNV());
         ImageIcon iconTaiKhoan = new ImageIcon("image//userIcon.png");
         iconTaiKhoan.setImage(iconTaiKhoan.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH));
         mnuTaiKhoan.setFont(new Font(Font.SERIF, Font.ITALIC, 25));
         mnuTaiKhoan.setIcon(iconTaiKhoan);
         mniThongKeDoanhThu = new JMenuItem("Thống kê doanh thu");
         mniThongKeDoanhThu.setFont(fontMenuItem);
+        mniThongKeDoanhThu.addActionListener(e->{
+            new ThongKeDoanhThuGUI(nhanVien).setVisible(true);
+            this.dispose();
+        });
         JMenuItem mniThemNhanVien = new JMenuItem("Thêm nhân viên");
         mniThemNhanVien.setFont(fontMenuItem);
         JMenuItem mniTaoTaiKhoan = new JMenuItem("Tạo tài khoản");
@@ -661,34 +665,40 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
         if (o.equals(mnuDatBan)) {
             FormManHinhChinh newFrmManHinhChinh = new FormManHinhChinh(nhanVien);
             newFrmManHinhChinh.setVisible(true);
+            this.dispose();
         }
         else if (o.equals(mniDSKhuyenMai)) {
-            this.dispose();
             KhuyenMaiGUI khuyenMaiGUI = new KhuyenMaiGUI(nhanVien);
             khuyenMaiGUI.setVisible(true);
+            this.dispose();
         } else if (o.equals(mniThemKhuyenMai)) {
-
+            KhuyenMaiGUI khuyenMaiGUI = new KhuyenMaiGUI(nhanVien);
+            khuyenMaiGUI.setVisible(true);
+            this.dispose();
         } else if (o.equals(mnuKhachHang)) {
             KhachHangGUI newKhachHangGUI = new KhachHangGUI(nhanVien);
             newKhachHangGUI.setVisible(true);
+            this.dispose();
         } else if (o.equals(mnuBan)) {
 
-
         } else if (o.equals(mniDSMonAn)) {
-            dispose();
             MonAnGUI monAnGUI = new MonAnGUI(nhanVien);
             monAnGUI.setVisible(true);
-
-        } else if (o.equals(mniThemMonAn)) {
-
-        } else if (o.equals(mniQuanLiKhachHang)) {
             this.dispose();
+        } else if (o.equals(mniThemMonAn)) {
+            MonAnGUI monAnGUI = new MonAnGUI(nhanVien);
+            monAnGUI.setVisible(true);
+            this.dispose();
+        } else if (o.equals(mniQuanLiKhachHang)) {
             KhachHangGUI khachHang = new KhachHangGUI(nhanVien);
             khachHang.setVisible(true);
+            this.dispose();
         } else if (o.equals(mniThongKeDoanhThu)) {
-
+            new ThongKeDoanhThuGUI(nhanVien).setVisible(true);
+            this.dispose();
         } else if (o.equals(mniThongTinTaiKhoan)) {
-
+            new ThongTinTaiKhoan_GUI(new TaiKhoan_DAO().getTaiKhoanByMaNhanVien(nhanVien.getMaNV())).setVisible(true);
+            this.dispose();
         } else if (o.equals(mniDangXuat)) {
             int response = JOptionPane.showConfirmDialog(this,
                     "Bạn có chắc chắn muốn đăng xuất?",
@@ -701,6 +711,7 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
                 dangNhap_GUI.setVisible(true);
             }
         }
+
     }
     private void getDataToComboBox(JComboBox<String> cbbKhuVuc, JComboBox<Integer> cbbBan,JComboBox<Integer> cbbSoKhach, String khuVuc, int maBan) {
 

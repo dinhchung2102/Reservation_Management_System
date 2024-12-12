@@ -26,6 +26,7 @@ import javax.swing.border.LineBorder;
 
 import dao.DAO_Ban;
 import dao.NhanVien_DAO;
+import dao.PhieuDatBan_DAO;
 import dao.TaiKhoan_DAO;
 import entity.Ban;
 import entity.NhanVien;
@@ -201,14 +202,14 @@ public class FormManHinhChinh extends JFrame implements ActionListener {
 		mniThongKeDoanhThu = new JMenuItem("Thống kê doanh thu");
 		mniThongKeDoanhThu.setFont(fontMenuItem);
 		mniThongKeDoanhThu.addActionListener(e->{
-			ThongKeDoanhThuGUI tkNew = new ThongKeDoanhThuGUI();
+			ThongKeDoanhThuGUI tkNew = new ThongKeDoanhThuGUI(nhanVien);
 			tkNew.setVisible(true);
 			this.dispose();
 		});
 		JMenuItem mniThongKeDoanhThuTheoCa = new JMenuItem(("Thống kê doanh thu theo ca"));
 		mniThongKeDoanhThuTheoCa.setFont(fontMenuItem);
 		mniThongKeDoanhThuTheoCa.addActionListener(e->{
-			ThongKeDoanhThuTheoCaGUI tkNew = new ThongKeDoanhThuTheoCaGUI();
+			ThongKeDoanhThuTheoCaGUI tkNew = new ThongKeDoanhThuTheoCaGUI(nhanVien);
 			tkNew.setVisible(true);
 			this.dispose();
 		});
@@ -334,28 +335,34 @@ public class FormManHinhChinh extends JFrame implements ActionListener {
 		} else if (o.equals(btnLau3)) {
 			nvgButton(btnLau3, btnLau1, btnLau2, "Lầu 3");
 		} else if (o.equals(mnuDatBan)) {
-			FormManHinhChinh newFrmManHinhChinh = new FormManHinhChinh(nhanVien);
-			newFrmManHinhChinh.setVisible(true);
-		}
 
+		}
 		else if (o.equals(mniDSPhieuDatBan)) {
+			FormPhieuDatBan newFormPhieuDatBan = new FormPhieuDatBan(nhanVien);
+			newFormPhieuDatBan.setVisible(true);
+			this.dispose();
+		} else if (o.equals(mniTimKiemPhieuDatBan)) {
 			this.dispose();
 			FormPhieuDatBan newFormPhieuDatBan = new FormPhieuDatBan(nhanVien);
 			newFormPhieuDatBan.setVisible(true);
-
 		} else if (o.equals(mniDSHoaDon)) {
-
+			DanhSachHoaDon_GUI newFrm = new DanhSachHoaDon_GUI(new TaiKhoan_DAO().getTaiKhoanByMaNhanVien(nhanVien.getMaNV()));
 		} else if (o.equals(mniXuatHoaDon)) {
-
+			XuatHoaDon_GUI newFrm = new XuatHoaDon_GUI(new TaiKhoan_DAO().getTaiKhoanByMaNhanVien(nhanVien.getMaNV()));
+			newFrm.setVisible(true);
+			this.dispose();
 		} else if (o.equals(mniDSKhuyenMai)) {
 			this.dispose();
 			KhuyenMaiGUI khuyenMaiGUI = new KhuyenMaiGUI(nhanVien);
 			khuyenMaiGUI.setVisible(true);
 		} else if (o.equals(mniThemKhuyenMai)) {
-
+			this.dispose();
+			KhuyenMaiGUI khuyenMaiGUI = new KhuyenMaiGUI(nhanVien);
+			khuyenMaiGUI.setVisible(true);
 		} else if (o.equals(mnuKhachHang)) {
 			KhachHangGUI newKhachHangGUI = new KhachHangGUI(nhanVien);
 			newKhachHangGUI.setVisible(true);
+			this.dispose();
 		} else if (o.equals(mnuBan)) {
 			
 
@@ -365,13 +372,17 @@ public class FormManHinhChinh extends JFrame implements ActionListener {
 			monAnGUI.setVisible(true);
 
 		} else if (o.equals(mniThemMonAn)) {
-
+			dispose();
+			MonAnGUI monAnGUI = new MonAnGUI(nhanVien);
+			monAnGUI.setVisible(true);
 		} else if (o.equals(mniQuanLiKhachHang)) {
 			this.dispose();
 			KhachHangGUI khachHang = new KhachHangGUI(nhanVien);
 			khachHang.setVisible(true);
 		} else if (o.equals(mniThongKeDoanhThu)) {
-
+			ThongKeDoanhThuGUI newFrm = new ThongKeDoanhThuGUI(nhanVien);
+			newFrm.setVisible(true);
+			this.dispose();
 		} else if (o.equals(mniThongTinTaiKhoan)) {
 			TaiKhoan_DAO daoTK = new TaiKhoan_DAO();
 			TaiKhoan taiKhoan = daoTK.getTaiKhoanByMaNhanVien(nhanVien.getMaNV());
@@ -480,7 +491,7 @@ public class FormManHinhChinh extends JFrame implements ActionListener {
 			});
 			btnXuatHD.addActionListener(e->{
 				System.out.print("\nXuất hóa đơn");
-				XuatHoaDon_GUI hdGui = new XuatHoaDon_GUI(new TaiKhoan_DAO().getTaiKhoanByMaNhanVien(nhanVien.getMaNV()));
+				XuatHoaDon_GUI hdGui = new XuatHoaDon_GUI(new TaiKhoan_DAO().getTaiKhoanByMaNhanVien(nhanVien.getMaNV()), new PhieuDatBan_DAO().getPhieuDatBanTheoMaBan(id).getMaPhieuDatBan());
 				hdGui.setVisible(true);
 			});
 			

@@ -49,11 +49,11 @@ public class DangNhap_GUI extends JFrame implements ActionListener {
         setLocationRelativeTo(null);
         setVisible(true);
 
-        // Cập nhật trạng thái bàn
-        DAO_Ban dao_BanTest = new DAO_Ban();
-        for (int i = 1; i <= 18; i++) {
-            dao_BanTest.capNhatTrangThaiBanById(i, false);
-        }
+//        // Cập nhật trạng thái bàn
+//        DAO_Ban dao_BanTest = new DAO_Ban();
+//        for (int i = 1; i <= 18; i++) {
+//            dao_BanTest.capNhatTrangThaiBanById(i, false);
+//        }
 
         // Tạo panel chính với hình nền
         pnlDangNhap = new JPanel(new GridBagLayout()) {

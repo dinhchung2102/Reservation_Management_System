@@ -105,9 +105,9 @@ public class MonAnGUI extends JFrame {
 		mnuDatBan.add(mniManHinhChinhItem);
 		
 		mniManHinhChinhItem.addActionListener(e->{
-			this.dispose();
 			FormManHinhChinh newFormManHinhChinh = new FormManHinhChinh(nhanVien);
 			newFormManHinhChinh.setVisible(true);
+            this.dispose();
 		});
 
 		// mnuDatBan.addActionListener(this);

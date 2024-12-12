@@ -82,16 +82,15 @@ public class DanhSachHoaDon_GUI extends JFrame implements ActionListener {
     private JScrollPane scrDanhSachHoaDon;
 
     public DanhSachHoaDon_GUI() {
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setResizable(false);
+        setTitle("Quản lý đặt bàn");
         setExtendedState(JFrame.MAXIMIZED_BOTH); // Full màn hình
-        setTitle("CHƯƠNG TRÌNH QUẢN LÍ ĐẶT BÀN TRONG NHÀ HÀNG");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
 
         // tạo font cho JMenu
-        fontMenu = new Font(Font.SERIF, Font.BOLD, 30);
+        fontMenu = new Font(Font.SERIF, Font.BOLD, 25);
         // tạo font cho JMenuItem
-        fontMenuItem = new Font(Font.SERIF, Font.PLAIN, 30);
+        fontMenuItem = new Font(Font.SERIF, Font.PLAIN, 25);
 
         // Tạo menubar
         mnuMenuBar = new JMenuBar();
@@ -119,6 +118,8 @@ public class DanhSachHoaDon_GUI extends JFrame implements ActionListener {
 
         // Tạo menu hóa đơn
         mnuHoaDon = new JMenu("   Hóa đơn   ");
+        mnuHoaDon.setOpaque(true);
+        mnuHoaDon.setBackground(Color.GREEN);
         mnuHoaDon.setFont(fontMenu);
         mniXuatHoaDon = new JMenuItem("Xuất hóa đơn");
         mniXuatHoaDon.setFont(fontMenuItem);
@@ -219,7 +220,7 @@ public class DanhSachHoaDon_GUI extends JFrame implements ActionListener {
 
         // Giao diện
         // Tạo font
-        Font font = new Font("Times New Roman", 1, 30);
+        Font font = new Font("Times New Roman", 1, 25);
         // Sử dụng Map để thêm thuộc tính gạch chân
         Map<TextAttribute, Object> attributes = (Map<TextAttribute, Object>) font.getAttributes();
         attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
@@ -241,7 +242,7 @@ public class DanhSachHoaDon_GUI extends JFrame implements ActionListener {
         /////////////////////
         // JPanel danh sách hóa đơn
         pnlDanhSachHoaDon = new JPanel(new BorderLayout());
-        pnlDanhSachHoaDon.setBorder(BorderFactory.createEmptyBorder(0, 200, 0, 200));
+        pnlDanhSachHoaDon.setBorder(BorderFactory.createEmptyBorder(0, 50, 0, 50));
         add(pnlDanhSachHoaDon, BorderLayout.CENTER);
         String[] colsHoaDon = { "Mã hóa đơn", "Thanh toán lúc", "Khách hàng", "Số diện thoại", "Mã phiếu đặt", "Bàn", "Lầu", "Tổng thành tiền", "Tổng tiền cuối" };
         modelDanhSachHoaDon = new DefaultTableModel(colsHoaDon, 0);
@@ -284,44 +285,62 @@ public class DanhSachHoaDon_GUI extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         Object o = e.getSource();
         if (o.equals(mniDatBan)) {
+            FormManHinhChinh newFrm = new FormManHinhChinh(taiKhoan.getNhanVien());
+            newFrm.setVisible(true);
             this.dispose();
-            new FormManHinhChinh(taiKhoan.getNhanVien()).setVisible(true);
         } else if (o.equals(mniDSPhieuDatBan)) {
+            FormPhieuDatBan newFrm = new FormPhieuDatBan(taiKhoan.getNhanVien());
+            newFrm.setVisible(true);
             this.dispose();
-            new FormPhieuDatBan(taiKhoan.getNhanVien()).setVisible(true);
         } else if (o.equals(mniTimKiemPhieuDatBan)) {
-
+            FormPhieuDatBan newFrm = new FormPhieuDatBan(taiKhoan.getNhanVien());
+            newFrm.setVisible(true);
+            this.dispose();
         } else if (o.equals(mniXuatHoaDon)) {
+            new XuatHoaDon_GUI(taiKhoan).setVisible(true);
             this.dispose();
-            new XuatHoaDon_GUI(taiKhoan);
         } else if (o.equals(mniDSHoaDon)) {
+            new DanhSachHoaDon_GUI(taiKhoan).setVisible(true);
             this.dispose();
-            new DanhSachHoaDon_GUI(taiKhoan);
         } else if (o.equals(mniDSKhuyenMai)) {
-            this.dispose();
             new KhuyenMaiGUI(taiKhoan.getNhanVien()).setVisible(true);
+            this.dispose();
         } else if (o.equals(mniThemKhuyenMai)) {
+            new KhuyenMaiGUI(taiKhoan.getNhanVien()).setVisible(true);
             this.dispose();
         } else if (o.equals(mnuKhachHang)) {
-
+            new KhachHangGUI(taiKhoan.getNhanVien()).setVisible(true);
+            this.dispose();
         } else if (o.equals(mnuBan)) {
 
         } else if (o.equals(mniDSMonAn)) {
-
+            new MonAnGUI(taiKhoan.getNhanVien()).setVisible(true);
+            this.dispose();
         } else if (o.equals(mniThemMonAn)) {
-
+            new MonAnGUI(taiKhoan.getNhanVien()).setVisible(true);
+            this.dispose();
         } else if (o.equals(mniThongKeDoanhThu)) {
-
+            new ThongKeDoanhThuGUI(taiKhoan.getNhanVien()).setVisible(true);
+            this.dispose();
         } else if (o.equals(mniThemNhanVien)) {
             this.dispose();
         } else if (o.equals(mniTaoTaiKhoan)) {
+            new TaoTaiKhoan_GUI(taiKhoan).setVisible(true);
             this.dispose();
         } else if (o.equals(mniThongTinTaiKhoan)) {
             this.dispose();
-            new ThongTinTaiKhoan_GUI(taiKhoan);
+            new ThongTinTaiKhoan_GUI(taiKhoan).setVisible(true);
         } else if (o.equals(mniDangXuat)) {
-            this.dispose();
-            new DangNhap_GUI();
+            int response = JOptionPane.showConfirmDialog(this,
+                    "Bạn có chắc chắn muốn đăng xuất?",
+                    "Xác nhận đăng xuất",
+                    JOptionPane.YES_NO_OPTION);
+
+            if (response == JOptionPane.YES_OPTION) {
+                DangNhap_GUI dangNhap_GUI = new DangNhap_GUI();
+                dangNhap_GUI.setVisible(true);
+                this.dispose();
+            }
         }
 
     }

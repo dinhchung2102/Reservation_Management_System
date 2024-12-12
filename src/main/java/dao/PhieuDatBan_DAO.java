@@ -180,7 +180,6 @@ public class PhieuDatBan_DAO {
 	public void capNhatTrangThaiByMaPhieu(int maPhieuDatBan, String trangThaiMoi) {
 		// Kết nối cơ sở dữ liệu
 		Connection con = ConnectDB.getConnection();
-
 		// Câu lệnh SQL cập nhật trạng thái theo mã phiếu đặt bàn
 		String query = "UPDATE PhieuDatBan SET trangThai = ? WHERE maPhieuDatBan = ?";
 
@@ -202,6 +201,44 @@ public class PhieuDatBan_DAO {
 			e.printStackTrace();
 			System.out.println("Lỗi khi cập nhật trạng thái phiếu đặt bàn.");
 		}
+	}
+
+
+	public PhieuDatBan getPhieuDatBanTheoMaBan(int maBan) {
+		PhieuDatBan phieuDatBan = null;
+
+		Connection con = ConnectDB.getConnection();
+		String query = "SELECT * FROM PhieuDatBan WHERE maBan = ? AND trangThai = N'Đang sử dụng'";  // Sửa dấu " thành '
+
+		try {
+			PreparedStatement pstm = con.prepareStatement(query);
+			pstm.setInt(1, maBan);
+			ResultSet rs = pstm.executeQuery();
+
+			// Kiểm tra kết quả trả về
+			if (rs.next()) {
+				int maPhieuDatBan = rs.getInt("maPhieuDatBan");
+				Timestamp timestampNgayTaoPhieu = rs.getTimestamp("ngayTaoPhieu");
+				LocalDateTime ngayTaoPhieu = timestampNgayTaoPhieu.toLocalDateTime();
+				Timestamp timestampThoiGianDatBan = rs.getTimestamp("thoiGianDatBan");
+				LocalDateTime thoiGianDatBan = timestampThoiGianDatBan.toLocalDateTime();
+				int soLuongKhach = rs.getInt("soLuongKhach");
+				float tienCoc = rs.getFloat("tienCoc");
+				String trangThai = rs.getString("trangThai");
+
+				// Giả sử bạn đã có các đối tượng DAO cho KhachHang, NhanVien và Ban
+				KhachHang khachHang = khachHang_DAO.getKhachHangTheoMa(rs.getInt("maKH"));
+				NhanVien nhanVien = nhanVien_DAO.getNhanVienTheoMa(rs.getInt("maNV"));
+				Ban ban = ban_DAO.getBanById(rs.getInt("maBan"));
+
+				// Tạo đối tượng PhieuDatBan với các giá trị lấy được
+				phieuDatBan = new PhieuDatBan(maPhieuDatBan, ngayTaoPhieu, thoiGianDatBan, soLuongKhach, tienCoc, trangThai, khachHang, nhanVien, ban);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return phieuDatBan;
 	}
 
 }

@@ -138,16 +138,16 @@ public class XuatHoaDon_GUI extends JFrame implements ActionListener {
     private JButton btnXacNhanKhuyenMai;
 
     public XuatHoaDon_GUI() {
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setResizable(false);
+        setTitle("Quản lý đặt bàn");
         setExtendedState(JFrame.MAXIMIZED_BOTH); // Full màn hình
-        setTitle("CHƯƠNG TRÌNH QUẢN LÍ ĐẶT BÀN TRONG NHÀ HÀNG");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
 
         // tạo font cho JMenu
-        fontMenu = new Font(Font.SERIF, Font.BOLD, 30);
+        fontMenu = new Font(Font.SERIF, Font.BOLD, 25);
         // tạo font cho JMenuItem
-        fontMenuItem = new Font(Font.SERIF, Font.PLAIN, 30);
+        fontMenuItem = new Font(Font.SERIF, Font.PLAIN, 25
+        );
 
         // Tạo menubar
         mnuMenuBar = new JMenuBar();
@@ -175,6 +175,8 @@ public class XuatHoaDon_GUI extends JFrame implements ActionListener {
 
         // Tạo menu hóa đơn
         mnuHoaDon = new JMenu("   Hóa đơn   ");
+        mnuHoaDon.setOpaque(true);
+        mnuHoaDon.setBackground(Color.GREEN);
         mnuHoaDon.setFont(fontMenu);
         mniXuatHoaDon = new JMenuItem("Xuất hóa đơn");
         mniXuatHoaDon.setFont(fontMenuItem);
@@ -282,8 +284,8 @@ public class XuatHoaDon_GUI extends JFrame implements ActionListener {
         // Áp dụng font với gạch chân
         fontTieuDe = new Font(attributes);
 
-        fontGiaoDien = new Font(Font.SERIF, Font.PLAIN, 25);
-        fontGiaoDienInDam = new Font(Font.SERIF, Font.BOLD, 25);
+        fontGiaoDien = new Font(Font.SERIF, Font.PLAIN, 15);
+        fontGiaoDienInDam = new Font(Font.SERIF, Font.BOLD, 15);
 
         // JPanel tiêu đề
         pnlTieuDe = new JPanel();
@@ -382,7 +384,7 @@ public class XuatHoaDon_GUI extends JFrame implements ActionListener {
         pnlChiTietHoaDon.add(pnlTenNhanVien);
         pnlChiTietHoaDon.add(pnlDanhSachDatMon);
 
-        //
+
         String[] colsDatMon = { "Tên món", "Số lượng", "Thành tiền" };
         modelDanhSachDatMon = new DefaultTableModel(colsDatMon, 0);
         tblDanhSachDatMon = new JTable(modelDanhSachDatMon);
@@ -475,6 +477,7 @@ public class XuatHoaDon_GUI extends JFrame implements ActionListener {
             mniTaoTaiKhoan.setEnabled(false);
         }
     }
+
     public XuatHoaDon_GUI(TaiKhoan tk, int maPhieuDatBanInput) {
         this();
         this.taiKhoan = tk;
@@ -484,7 +487,6 @@ public class XuatHoaDon_GUI extends JFrame implements ActionListener {
             mniThemNhanVien.setEnabled(false);
             mniTaoTaiKhoan.setEnabled(false);
         }
-
         updateDuLieuHoaDon(maPhieuDatBanInput);
     }
 
@@ -546,43 +548,62 @@ public class XuatHoaDon_GUI extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         Object o = e.getSource();
         if (o.equals(mniDatBan)) {
+            FormManHinhChinh newFrm = new FormManHinhChinh(taiKhoan.getNhanVien());
+            newFrm.setVisible(true);
             this.dispose();
-            new FormManHinhChinh(taiKhoan.getNhanVien());
         } else if (o.equals(mniDSPhieuDatBan)) {
+            FormPhieuDatBan newFrm = new FormPhieuDatBan(taiKhoan.getNhanVien());
+            newFrm.setVisible(true);
             this.dispose();
         } else if (o.equals(mniTimKiemPhieuDatBan)) {
-
+            FormPhieuDatBan newFrm = new FormPhieuDatBan(taiKhoan.getNhanVien());
+            newFrm.setVisible(true);
+            this.dispose();
         } else if (o.equals(mniXuatHoaDon)) {
+            new XuatHoaDon_GUI(taiKhoan).setVisible(true);
             this.dispose();
-            new XuatHoaDon_GUI(taiKhoan);
         } else if (o.equals(mniDSHoaDon)) {
+            new DanhSachHoaDon_GUI(taiKhoan).setVisible(true);
             this.dispose();
-            new DanhSachHoaDon_GUI(taiKhoan);
         } else if (o.equals(mniDSKhuyenMai)) {
+            new KhuyenMaiGUI(taiKhoan.getNhanVien()).setVisible(true);
             this.dispose();
-            new KhuyenMaiGUI(new NhanVien_DAO().getNhanVienTheoMa(taiKhoan.getNhanVien().getMaNV()));
         } else if (o.equals(mniThemKhuyenMai)) {
+            new KhuyenMaiGUI(taiKhoan.getNhanVien()).setVisible(true);
             this.dispose();
         } else if (o.equals(mnuKhachHang)) {
-
+            new KhachHangGUI(taiKhoan.getNhanVien()).setVisible(true);
+            this.dispose();
         } else if (o.equals(mnuBan)) {
 
         } else if (o.equals(mniDSMonAn)) {
-
+            new MonAnGUI(taiKhoan.getNhanVien()).setVisible(true);
+            this.dispose();
         } else if (o.equals(mniThemMonAn)) {
-
+            new MonAnGUI(taiKhoan.getNhanVien()).setVisible(true);
+            this.dispose();
         } else if (o.equals(mniThongKeDoanhThu)) {
-
+            new ThongKeDoanhThuGUI(taiKhoan.getNhanVien()).setVisible(true);
+            this.dispose();
         } else if (o.equals(mniThemNhanVien)) {
             this.dispose();
         } else if (o.equals(mniTaoTaiKhoan)) {
+            new TaoTaiKhoan_GUI(taiKhoan).setVisible(true);
             this.dispose();
         } else if (o.equals(mniThongTinTaiKhoan)) {
             this.dispose();
-            new ThongTinTaiKhoan_GUI(taiKhoan);
+            new ThongTinTaiKhoan_GUI(taiKhoan).setVisible(true);
         } else if (o.equals(mniDangXuat)) {
-            this.dispose();
-            new DangNhap_GUI();
+            int response = JOptionPane.showConfirmDialog(this,
+                    "Bạn có chắc chắn muốn đăng xuất?",
+                    "Xác nhận đăng xuất",
+                    JOptionPane.YES_NO_OPTION);
+
+            if (response == JOptionPane.YES_OPTION) {
+                this.dispose();
+                DangNhap_GUI dangNhap_GUI = new DangNhap_GUI();
+                dangNhap_GUI.setVisible(true);
+            }
         }
 
         else if (o.equals(btnTimKiem)) {

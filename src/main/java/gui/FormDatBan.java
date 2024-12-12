@@ -25,19 +25,8 @@ import javax.swing.table.JTableHeader;
 
 import com.toedter.calendar.JDateChooser;
 
-import dao.ChiTietPhieuDatBan_DAO;
-import dao.DAO_Ban;
-import dao.DAO_KhachHang;
-import dao.DAO_KhuVuc;
-import dao.MonAnDAO;
-import dao.PhieuDatBan_DAO;
-import entity.Ban;
-import entity.ChiTietPhieuDatBan;
-import entity.KhachHang;
-import entity.KhuVuc;
-import entity.MonAn;
-import entity.NhanVien;
-import entity.PhieuDatBan;
+import dao.*;
+import entity.*;
 
 public class FormDatBan extends JFrame {
 	/**
@@ -79,7 +68,7 @@ public class FormDatBan extends JFrame {
 	private JLabel lblBan;
 	private JComboBox<Integer> comboBoxBan;
 	private JLabel lblSoKhach;
-	private JComboBox<Integer> comboBoxSLKhach;
+	private final JComboBox<Integer> comboBoxSLKhach;
 	private JPanel pnlGioDen;
 	private JLabel lblGioDen;
 	private JComboBox<Integer> comboBoxGio;
@@ -664,6 +653,8 @@ public class FormDatBan extends JFrame {
 			comboBoxGio.setEnabled(false);
 			comboBoxPhut.setEnabled(false);
 			dateChooserNgayDen.setEnabled(false);
+			getTienCoc((int) comboBoxBan.getSelectedItem(), (int) comboBoxSLKhach.getSelectedItem());
+			updateTienCoc();
 
 		});
 
@@ -675,6 +666,9 @@ public class FormDatBan extends JFrame {
 			comboBoxPhut.setEnabled(true);
 			dateChooserNgayDen.setBackground(whiteColor);
 			dateChooserNgayDen.setEnabled(true);
+			getTienCoc((int) comboBoxBan.getSelectedItem(), (int) comboBoxSLKhach.getSelectedItem());
+			updateTienCoc();
+
 		});
 		hh = new JLabel("giờ");
 		hh.setFont(txtFieldFont);
@@ -1006,6 +1000,10 @@ public class FormDatBan extends JFrame {
 			}
 			else {
 				// Nếu tất cả đều hợp lệ
+
+
+
+				//////////=============Dùng sau===============////////////
 				if (radioBtnDungSau.isSelected()) {
 
 					if (radioBtnKHMoi.isSelected()) {
@@ -1074,6 +1072,7 @@ public class FormDatBan extends JFrame {
 
 					}
 
+
 					// ======================DÙNG NGAY=================================
 				} else if (radioBtnSuDungNgay.isSelected()) {
 					if (radioBtnKHMoi.isSelected()) {
@@ -1082,18 +1081,70 @@ public class FormDatBan extends JFrame {
 						KhachHang khachHangMoi = new KhachHang(0, txtTenKH.getText(), txtSDT.getText(),
 								txtEmail.getText(), txtDiaChi.getText());
 						dao_KhachHang.addKhachHang(khachHangMoi);
+
 						JOptionPane.showMessageDialog(this, "ĐẶT BÀN THÀNH CÔNG!");
 						// cập nhật trạng thái bàn
 						capNhatTrangThaiBanBySelectedItem(comboBoxBan);
+						int maPhieu = themPhieuDatBan(comboBoxGio, comboBoxPhut, khachHangMoi.getSoDT(), (int) comboBoxSLKhach.getSelectedItem(), Float.parseFloat(txtTienCoc.getText()), "Đang sử dụng",
+								(int) comboBoxBan.getSelectedItem(), nhanVien, true);
+						for (int i = 0; i < modelTinhTien.getRowCount(); i++) {
+							int maMon = (int) modelTinhTien.getValueAt(i, 1); // Mã món
+							float donGia = (float) modelTinhTien.getValueAt(i, 3);
+							int soLuong = (int) modelTinhTien.getValueAt(i, 4); // Số lượng
+							float thanhTien = (float) modelTinhTien.getValueAt(i, 5); // Thành tiền
+
+							ChiTietPhieuDatBan_DAO chiTietPhieuDatBan_DAO = new ChiTietPhieuDatBan_DAO();
+							ChiTietPhieuDatBan chiTietPhieuDatBan = new ChiTietPhieuDatBan(donGia, soLuong,
+									thanhTien, new MonAnDAO().getMonAnTheoMa(maMon),
+									new PhieuDatBan_DAO().getPhieuDatBanTheoMa(maPhieu));
+
+							chiTietPhieuDatBan_DAO.themChiTietPhieuDatBan(chiTietPhieuDatBan);
+						}
 					} else if (radioBtnKHVangLai.isSelected()) {
 						// Khách vãng lai đặt bàn,
 						// thêm phiếu, thêm chi tiết phiếu
 						JOptionPane.showMessageDialog(this, "ĐẶT BÀN THÀNH CÔNG!");
 						capNhatTrangThaiBanBySelectedItem(comboBoxBan);
+						int maPhieu = themPhieuDatBan(comboBoxGio, comboBoxPhut, txtSDT.getText(), (int) comboBoxSLKhach.getSelectedItem(), Float.parseFloat(txtTienCoc.getText()), "Đang sử dụng",
+								(int) comboBoxBan.getSelectedItem(), nhanVien, true);
+
+						for (int i = 0; i < modelTinhTien.getRowCount(); i++) {
+							int maMon = (int) modelTinhTien.getValueAt(i, 1); // Mã món
+							float donGia = (float) modelTinhTien.getValueAt(i, 3);
+							int soLuong = (int) modelTinhTien.getValueAt(i, 4); // Số lượng
+							float thanhTien = (float) modelTinhTien.getValueAt(i, 5); // Thành tiền
+
+							ChiTietPhieuDatBan_DAO chiTietPhieuDatBan_DAO = new ChiTietPhieuDatBan_DAO();
+							ChiTietPhieuDatBan chiTietPhieuDatBan = new ChiTietPhieuDatBan(donGia, soLuong,
+									thanhTien, new MonAnDAO().getMonAnTheoMa(maMon),
+									new PhieuDatBan_DAO().getPhieuDatBanTheoMa(maPhieu));
+
+							chiTietPhieuDatBan_DAO.themChiTietPhieuDatBan(chiTietPhieuDatBan);
+						}
+
 					} else {
 						// Khách hàng cũ đặt bàn
 						JOptionPane.showMessageDialog(this, "ĐẶT BÀN THÀNH CÔNG!");
+
+						int maPhieu = themPhieuDatBan(comboBoxGio, comboBoxPhut, txtSDT.getText(), (int) comboBoxSLKhach.getSelectedItem(), Float.parseFloat(txtTienCoc.getText()), "Đang sử dụng",
+								(int) comboBoxBan.getSelectedItem(), nhanVien, true);
+
+						for (int i = 0; i < modelTinhTien.getRowCount(); i++) {
+							int maMon = (int) modelTinhTien.getValueAt(i, 1); // Mã món
+							float donGia = (float) modelTinhTien.getValueAt(i, 3);
+							int soLuong = (int) modelTinhTien.getValueAt(i, 4); // Số lượng
+							float thanhTien = (float) modelTinhTien.getValueAt(i, 5); // Thành tiền
+
+							ChiTietPhieuDatBan_DAO chiTietPhieuDatBan_DAO = new ChiTietPhieuDatBan_DAO();
+							ChiTietPhieuDatBan chiTietPhieuDatBan = new ChiTietPhieuDatBan(donGia, soLuong,
+									thanhTien, new MonAnDAO().getMonAnTheoMa(maMon),
+									new PhieuDatBan_DAO().getPhieuDatBanTheoMa(maPhieu));
+
+							chiTietPhieuDatBan_DAO.themChiTietPhieuDatBan(chiTietPhieuDatBan);
+						}
+
 						capNhatTrangThaiBanBySelectedItem(comboBoxBan);
+
 					}
 
 				}
@@ -1163,7 +1214,10 @@ public class FormDatBan extends JFrame {
 		DAO_Ban dao_Ban = new DAO_Ban();
 		int soGhe = dao_Ban.getSoGheByMaBan(maBan);
 
-		if (soGhe <= 4) {
+		if(radioBtnSuDungNgay.isSelected()){
+			return  tienCoc;
+		}
+		else if (soGhe <= 4) {
 			tienCoc = (float) (soGhe * (50000.0) + soLuongKhach * (100000.0));
 		} else if (soGhe <= 10) {
 			tienCoc = (float) (soGhe * 50000.0 + soLuongKhach * 120000.0);

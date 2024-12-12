@@ -116,7 +116,7 @@ create table HoaDon
     go
 create table ChiTietHoaDon
 (
-    maChiTietHoaDon int primary key,
+    maChiTietHoaDon INT IDENTITY(1,1) PRIMARY KEY,
     maHoaDon int foreign key references HoaDon(maHoaDon) on delete no action,
     maPhieuDatBan int foreign key references PhieuDatBan(maPhieuDatBan) on delete no action,
     maKM int foreign key references KhuyenMai(maKM) on delete set null,
