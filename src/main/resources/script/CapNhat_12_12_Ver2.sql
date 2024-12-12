@@ -149,7 +149,7 @@ BEGIN
 UPDATE PhieuDatBan
 SET trangThai = N'Quá Hạn' -- Cập nhật trạng thái
 WHERE DATEDIFF(MINUTE, thoiGianDatBan, GETDATE()) > 30  -- Kiểm tra nếu thời gian đặt bàn đã quá 30 phút
-  AND trangThai = N'Chưa sử dụng'  -- Chỉ cập nhật nếu trạng thái là 'Chưa sử dụng'
+  AND trangThai IN (N'Chưa sử dụng', N'Thay đổi')  -- Chỉ cập nhật nếu trạng thái là 'Chưa sử dụng'
 END
 GO
 

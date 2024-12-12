@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -281,5 +282,118 @@ public class PhieuDatBan_DAO {
 		return phieuDatBanList;  // Trả về danh sách các PhieuDatBan
 	}
 
+
+		public ArrayList<PhieuDatBan> getPhieuDatBanByDate(LocalDate date) {
+			ArrayList<PhieuDatBan> dsPhieuDatBan = new ArrayList<>();
+			Connection con = ConnectDB.getConnection();
+
+			// Câu lệnh SQL để lấy phiếu đặt bàn có ngày khớp với ngày đầu và cuối ngày
+			String query = "SELECT * FROM PhieuDatBan WHERE CAST(ngayTaoPhieu AS DATE) = ?";
+
+			try {
+				PreparedStatement pstm = con.prepareStatement(query);
+				pstm.setDate(1, Date.valueOf(date));
+
+				ResultSet rs = pstm.executeQuery();
+
+				while (rs.next()) {
+					int maPhieuDatBan = rs.getInt("maPhieuDatBan");
+
+					Timestamp timestampNgayTaoPhieu = rs.getTimestamp("ngayTaoPhieu");
+					LocalDateTime ngayTaoPhieu = timestampNgayTaoPhieu.toLocalDateTime();
+
+					Timestamp timestampThoiGianDatBan = rs.getTimestamp("thoiGianDatBan");
+					LocalDateTime thoiGianDatBan = timestampThoiGianDatBan.toLocalDateTime();
+
+					int soLuongKhach = rs.getInt("soLuongKhach");
+					float tienCoc = rs.getFloat("tienCoc");
+					String trangThai = rs.getString("trangThai");
+
+					KhachHang khachHang = khachHang_DAO.getKhachHangTheoMa(rs.getInt("maKH"));
+					NhanVien nhanVien = nhanVien_DAO.getNhanVienTheoMa(rs.getInt("maNV"));
+					Ban ban = ban_DAO.getBanById(rs.getInt("maBan"));
+
+					PhieuDatBan phieuDatBan = new PhieuDatBan(maPhieuDatBan, ngayTaoPhieu, thoiGianDatBan, soLuongKhach, tienCoc, trangThai, khachHang, nhanVien, ban);
+
+					dsPhieuDatBan.add(phieuDatBan);
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return dsPhieuDatBan;
+		}
+
+	public ArrayList<PhieuDatBan> getPhieuDatBanByTrangThai(String trangThaiInPut) {
+		ArrayList<PhieuDatBan> dsPhieuDatBan = new ArrayList<>();
+		Connection con = ConnectDB.getConnection();
+
+		// Câu lệnh SQL để lấy phiếu đặt bàn có ngày khớp với ngày đầu và cuối ngày
+		String query = "SELECT * FROM PhieuDatBan WHERE trangThai = ?";
+
+		try {
+			PreparedStatement pstm = con.prepareStatement(query);
+			pstm.setString(1, String.valueOf(trangThaiInPut));
+
+			ResultSet rs = pstm.executeQuery();
+
+			while (rs.next()) {
+				int maPhieuDatBan = rs.getInt("maPhieuDatBan");
+
+				Timestamp timestampNgayTaoPhieu = rs.getTimestamp("ngayTaoPhieu");
+				LocalDateTime ngayTaoPhieu = timestampNgayTaoPhieu.toLocalDateTime();
+
+				Timestamp timestampThoiGianDatBan = rs.getTimestamp("thoiGianDatBan");
+				LocalDateTime thoiGianDatBan = timestampThoiGianDatBan.toLocalDateTime();
+
+				int soLuongKhach = rs.getInt("soLuongKhach");
+				float tienCoc = rs.getFloat("tienCoc");
+				String trangThai = rs.getString("trangThai");
+
+				KhachHang khachHang = khachHang_DAO.getKhachHangTheoMa(rs.getInt("maKH"));
+				NhanVien nhanVien = nhanVien_DAO.getNhanVienTheoMa(rs.getInt("maNV"));
+				Ban ban = ban_DAO.getBanById(rs.getInt("maBan"));
+
+				PhieuDatBan phieuDatBan = new PhieuDatBan(maPhieuDatBan, ngayTaoPhieu, thoiGianDatBan, soLuongKhach, tienCoc, trangThai, khachHang, nhanVien, ban);
+
+				dsPhieuDatBan.add(phieuDatBan);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return dsPhieuDatBan;
+	}
+
+	public boolean capNhatPhieuDatBan(PhieuDatBan phieuDatBan) {
+		Connection con = ConnectDB.getConnection();
+
+		String query = "UPDATE PhieuDatBan SET ngayTaoPhieu = ?, thoiGianDatBan = ?, soLuongKhach = ?, tienCoc = ?, trangThai = ?, maKH = ?, maNV = ?, maBan = ? WHERE maPhieuDatBan = ?";
+
+		try (PreparedStatement pstm = con.prepareStatement(query)) {
+			pstm.setTimestamp(1, Timestamp.valueOf(phieuDatBan.getNgayTaoPhieu()));
+			pstm.setTimestamp(2, Timestamp.valueOf(phieuDatBan.getThoiGianDatBan()));
+			pstm.setInt(3, phieuDatBan.getSoLuongKhach());
+			pstm.setFloat(4, phieuDatBan.getTienCoc());
+			pstm.setString(5, "Thay đổi");
+			pstm.setInt(6, phieuDatBan.getKhachHang().getMaKH());
+			pstm.setInt(7, phieuDatBan.getNhanVien().getMaNV());
+			pstm.setInt(8, phieuDatBan.getBan().getMaBan());
+			pstm.setInt(9, phieuDatBan.getMaPhieuDatBan());
+
+
+			int rowsAffected = pstm.executeUpdate();
+
+			if (rowsAffected > 0) {
+				System.out.println("Cập nhật phiếu đặt bàn thành công với mã phiếu: " + phieuDatBan.getMaPhieuDatBan());
+				return  true;
+			} else {
+				System.out.println("Không tìm thấy phiếu đặt bàn với mã: " + phieuDatBan.getMaPhieuDatBan());
+				return  false;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Lỗi khi cập nhật phiếu đặt bàn.");
+			return  false;
+		}
+	}
 
 }

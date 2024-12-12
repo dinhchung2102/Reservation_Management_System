@@ -111,7 +111,7 @@ public class FormManHinhChinh extends JFrame implements ActionListener {
 		this.setJMenuBar(mnuMenuBar);
 
 		// Tạo menu đặt bàn
-		mnuDatBan = new JMenu("     Đặt bàn     ");
+		mnuDatBan = new JMenu("     Sơ đồ     ");
 		mnuDatBan.setFont(fontMenu);
 		mnuDatBan.setOpaque(true);
 		mnuDatBan.setBackground(Color.GREEN);

@@ -14,7 +14,10 @@ import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Time;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -339,12 +342,36 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
         JButton btnAll = new JButton("TẤT CẢ");
 
         JButton btnHomNay = new JButton("HÔM NAY");
+        btnHomNay.addActionListener(e->{
+            loadDataToTableDSPhieuByDate(tblDanhSachPhieu);
+        });
 
         JButton btnDaHuy = new JButton("ĐÃ HỦY");
+        btnDaHuy.addActionListener(e->{
+            loadDataToTableDSPhieuByTrangThai(tblDanhSachPhieu, "Đã hủy");
+        });
+
+        JButton btnDaSuDung = new JButton("ĐÃ SỬ DỤNG");
+     btnDaSuDung.addActionListener(e->{
+      loadDataToTableDSPhieuByTrangThai(tblDanhSachPhieu, "Đã sử dụng");
+     });
+
+     JButton btnChuaSuDung = new JButton("CHƯA SỬ DỤNG");
+     btnChuaSuDung.addActionListener(e->{
+      loadDataToTableDSPhieuByTrangThai(tblDanhSachPhieu, "Chưa sử dụng");
+     });
+
+     JButton btnQuaHan = new JButton("QUÁ HẠN");
+     btnQuaHan.addActionListener(e->{
+      loadDataToTableDSPhieuByTrangThai(tblDanhSachPhieu, "Quá hạn");
+     });
 
         pnlFilter.add(btnAll);
         pnlFilter.add(btnHomNay);
+        pnlFilter.add(btnChuaSuDung);
+        pnlFilter.add(btnDaSuDung);
         pnlFilter.add(btnDaHuy);
+        pnlFilter.add(btnQuaHan);
         pnlFilter.add(Box.createHorizontalStrut(500));
 
         //=============================================================
@@ -561,6 +588,23 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
 
         btnThayDoi.addActionListener(e->{
             System.out.print("Thay đổi dat ban");
+            // Lấy giá trị từ các ComboBox
+            int maPhieuDatBan = Integer.parseInt(txtMaPhieu.getText().trim());
+            int maBanMoi = (int) comboBoxBan.getSelectedItem();
+            int soLuongKhachMoi = (int) comboBoxSoLuong.getSelectedItem();
+
+            LocalDate ngay = null;
+            Date date = dateChooserNgayDen.getDate();
+            if (date != null) {
+                ngay = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            }
+
+            int gio = (int) comboBoxGio.getSelectedItem();
+            int phut = (int) comboBoxPhut.getSelectedItem();
+            LocalTime localTime = LocalTime.of(gio, phut);
+
+            thayDoiDatBan(maPhieuDatBan, maBanMoi, soLuongKhachMoi, ngay, Time.valueOf(localTime), nhanVien, LocalDateTime.now());
+            loadDataToTableDSPhieu(tblDanhSachPhieu);
         });
         comboBoxKhuVuc.addActionListener(e -> {
             List<Ban> bans;
@@ -666,7 +710,7 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
                     dateChooserNgayDen.setDate(dateDatBan);
 
                     String trangThai = (String) tblDanhSachPhieu.getValueAt(selectedRow, 5);
-                    if("Chưa sử dụng".equals(trangThai)){
+                    if("Chưa sử dụng".equals(trangThai) || "Thay đổi".equals(trangThai)){
                         btnSuDung.setEnabled(true);
                         btnHuyDat.setEnabled(true);
                         btnThayDoi.setEnabled(true);
@@ -840,5 +884,83 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
             });
         }
     }
+
+    public static void loadDataToTableDSPhieuByDate(JTable table) {
+        PhieuDatBan_DAO phieuDatBanDao = new PhieuDatBan_DAO();
+        LocalDate today = LocalDate.now();
+        // Lấy danh sách phiếu đặt bàn theo maKH
+        List<PhieuDatBan> listPhieu = phieuDatBanDao.getPhieuDatBanByDate(today);
+
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        model.setRowCount(0);  // Xóa toàn bộ dữ liệu trong bảng trước khi thêm mới
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");  // Định dạng thời gian
+
+        int stt = 1;  // Biến để đánh số thứ tự
+        for (PhieuDatBan phieu : listPhieu) {
+            // Định dạng thời gian tạo phiếu và thời gian đặt bàn
+            String formattedNgayTaoPhieu = phieu.getNgayTaoPhieu().format(formatter);
+            String formattedThoiGianDatBan = phieu.getThoiGianDatBan().format(formatter);
+
+            // Thêm một dòng mới vào bảng với dữ liệu của phiếu đặt bàn
+            model.addRow(new Object[] {
+                    stt++,  // Số thứ tự
+                    phieu.getMaPhieuDatBan(),  // Mã phiếu đặt bàn
+                    phieu.getKhachHang().getMaKH(),  // Mã khách hàng
+                    formattedNgayTaoPhieu,  // Ngày tạo phiếu
+                    formattedThoiGianDatBan,  // Thời gian đặt bàn
+                    phieu.getTrangThai()  // Trạng thái
+            });
+        }
+    }
+    public static void loadDataToTableDSPhieuByTrangThai(JTable table, String trangThai) {
+        PhieuDatBan_DAO phieuDatBanDao = new PhieuDatBan_DAO();
+        // Lấy danh sách phiếu đặt bàn theo maKH
+        List<PhieuDatBan> listPhieu = phieuDatBanDao.getPhieuDatBanByTrangThai(trangThai);
+
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        model.setRowCount(0);  // Xóa toàn bộ dữ liệu trong bảng trước khi thêm mới
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");  // Định dạng thời gian
+
+        int stt = 1;  // Biến để đánh số thứ tự
+        for (PhieuDatBan phieu : listPhieu) {
+            // Định dạng thời gian tạo phiếu và thời gian đặt bàn
+            String formattedNgayTaoPhieu = phieu.getNgayTaoPhieu().format(formatter);
+            String formattedThoiGianDatBan = phieu.getThoiGianDatBan().format(formatter);
+
+            // Thêm một dòng mới vào bảng với dữ liệu của phiếu đặt bàn
+            model.addRow(new Object[] {
+                    stt++,  // Số thứ tự
+                    phieu.getMaPhieuDatBan(),  // Mã phiếu đặt bàn
+                    phieu.getKhachHang().getMaKH(),  // Mã khách hàng
+                    formattedNgayTaoPhieu,  // Ngày tạo phiếu
+                    formattedThoiGianDatBan,  // Thời gian đặt bàn
+                    phieu.getTrangThai()  // Trạng thái
+            });
+        }
+    }
+
+ public boolean thayDoiDatBan(int maPhieuDatBan, int maBanMoi, int soLuongKhachMoi, LocalDate ngay, Time gio, NhanVien nhanVien, LocalDateTime ngayThucHien) {
+  LocalTime localTime = gio.toLocalTime();
+  LocalDateTime ngayGioDatBan = LocalDateTime.of(ngay, localTime);
+
+  PhieuDatBan phieuDatBan = new PhieuDatBan_DAO().getPhieuDatBanTheoMa(maPhieuDatBan);
+
+  String noiDung = "";
+  if( phieuDatBan.getBan().getMaBan() != maBanMoi){
+     noiDung += "Bàn cũ: " + phieuDatBan.getBan().getMaBan() + " Bàn mới: " + maBanMoi;
+  }
+  if(phieuDatBan.getSoLuongKhach() != soLuongKhachMoi){
+      noiDung += " SL Khách cũ: " +  phieuDatBan.getSoLuongKhach() + " SL Khách mới: " + soLuongKhachMoi;
+  }
+  ThayDoiDatBan thayDoi = new ThayDoiDatBan(phieuDatBan, nhanVien, ngayThucHien, noiDung);
+  if(new ThayDoiDatBan_DAO().addThayDoi(thayDoi) && new PhieuDatBan_DAO().capNhatPhieuDatBan(new PhieuDatBan(maPhieuDatBan, phieuDatBan.getNgayTaoPhieu(), phieuDatBan.getThoiGianDatBan(), soLuongKhachMoi, phieuDatBan.getTienCoc(), phieuDatBan.getTrangThai(), phieuDatBan.getKhachHang(), phieuDatBan.getNhanVien(), new DAO_Ban().getBanById(maBanMoi)))){
+      JOptionPane.showMessageDialog(this, "Thay đổi thành công: " + noiDung);
+  }
+
+  return  false;
+
+ }
 }
 
