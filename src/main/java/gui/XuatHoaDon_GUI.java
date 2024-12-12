@@ -619,16 +619,14 @@ public class XuatHoaDon_GUI extends JFrame implements ActionListener {
             int result = JOptionPane.showConfirmDialog(null, "Xác nhận xuất hóa đơn", "Xác nhận",
                     JOptionPane.OK_CANCEL_OPTION);
             if (result == JOptionPane.OK_OPTION) {
-                PhieuDatBan phieuDatBan = TimPhieuDatBan(Integer.parseInt(txtMaPhieuDatBan.getText()));
-                HoaDon hoaDon = new HoaDon(phieuDatBan.getMaPhieuDatBan(), LocalDateTime.now());
-                ChiTietHoaDon chiTietHoaDon = new ChiTietHoaDon(hoaDon.getMaHoaDon(), hoaDon, phieuDatBan, khuyenMai, thue_DAO.getThueTheoMa(1), tongTien, tongTienCuoi);
-
-                if (hoaDon_DAO.themHoaDon(hoaDon)) {
-                    if (chiTietHoaDon_DAO.themChiTietHoaDon(chiTietHoaDon)) {
-                        JOptionPane.showMessageDialog(null, "<html>Xuất hóa đơn thành công<br>Mã hóa đơn là: "+ hoaDon.getMaHoaDon() + "</html>");
-                        this.dispose();
-                        new XuatHoaDon_GUI(taiKhoan);
-                    }
+                PhieuDatBan phieuDatBan = new PhieuDatBan_DAO().getPhieuDatBanTheoMa(Integer.parseInt(txtMaPhieuDatBan.getText()));
+                HoaDon hoaDon = new HoaDon(LocalDateTime.now());
+                if(new HoaDon_DAO().themHoaDon(hoaDon)){
+                    int maHD =  hoaDon.getMaHoaDon();
+                    ChiTietHoaDon chiTietHoaDon = new ChiTietHoaDon(new HoaDon_DAO().getHoaDonTheoMa(maHD), phieuDatBan, khuyenMai, thue_DAO.getThueTheoMa(1), tongTien, tongTienCuoi);
+                    new ChiTietHoaDon_DAO().themChiTietHoaDon(chiTietHoaDon);
+                    JOptionPane.showMessageDialog(this, "ĐÃ TẠO HÓA ĐƠN");
+                    this.dispose();
                 }
             }
 

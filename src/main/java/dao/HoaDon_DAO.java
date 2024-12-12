@@ -67,23 +67,23 @@ public class HoaDon_DAO {
 
     public boolean themHoaDon(HoaDon hoaDon) {
         Connection con = ConnectDB.getConnection();
-        String query = "insert into HoaDon values(?,?)";
+        String query = "insert into HoaDon (thoiGianThanhToan) values (?)"; // Cập nhật câu lệnh SQL nếu cần
         int n = 0;
         try {
-            PreparedStatement pstm = con.prepareStatement(query);
-
-            pstm.setInt(1, hoaDon.getMaHoaDon());
-            pstm.setTimestamp(2, Timestamp.valueOf(hoaDon.getThoiGianThanhToan()));
+            PreparedStatement pstm = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            pstm.setTimestamp(1, Timestamp.valueOf(hoaDon.getThoiGianThanhToan()));
 
             n = pstm.executeUpdate();
-        } catch (Exception e) {
-            // Kiểm tra lỗi Violation of PRIMARY KEY constraint
-            if (e.getMessage().contains("Violation of PRIMARY KEY constraint")) {
-                JOptionPane.showMessageDialog(null, "Lỗi: phiếu đặt này đã được tạo hóa đơn");
-            } else {
-                // Xử lý các lỗi SQL khác
-                e.printStackTrace();
+            if (n > 0) {
+                try (ResultSet rs = pstm.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        int maHoaDon = rs.getInt(1);
+                        hoaDon.setMaHoaDon(maHoaDon);
+                    }
+                }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return n > 0;
     }

@@ -33,5 +33,9 @@ public class HoaDon {
         super();
         // TODO Auto-generated constructor stub
     }
+    public HoaDon(LocalDateTime thoiGianThanhToan) {
+        this.maHoaDon = 0;
+        this.thoiGianThanhToan = thoiGianThanhToan;
+    }
 
 }

@@ -56,28 +56,24 @@ public class ChiTietHoaDon_DAO {
 
     public boolean themChiTietHoaDon(ChiTietHoaDon chiTietHoaDon) {
         Connection con = ConnectDB.getConnection();
-        String query = "insert into ChiTietHoaDon values(?,?,?,?,?,?,?)";
+        String query = "insert into ChiTietHoaDon values(?,?,?,?,?,?)";
         int n = 0;
         try {
             PreparedStatement pstm = con.prepareStatement(query);
 
-            pstm.setInt(1, chiTietHoaDon.getMaChiTietHoaDon());
-            pstm.setInt(2, chiTietHoaDon.getHoaDon().getMaHoaDon());
-            pstm.setInt(3, chiTietHoaDon.getPhieuDatBan().getMaPhieuDatBan());
-            pstm.setInt(4, chiTietHoaDon.getKhuyenMai().getMaKM());
-            pstm.setInt(5, chiTietHoaDon.getThue().getMaThue());
-            pstm.setDouble(6, chiTietHoaDon.getTongThanhTien());
-            pstm.setDouble(7, chiTietHoaDon.getTongTienCuoi());
+            pstm.setInt(1, chiTietHoaDon.getHoaDon().getMaHoaDon());
+            pstm.setInt(2, chiTietHoaDon.getPhieuDatBan().getMaPhieuDatBan());
+            pstm.setInt(3, chiTietHoaDon.getKhuyenMai().getMaKM());
+            pstm.setInt(4, chiTietHoaDon.getThue().getMaThue());
+            pstm.setDouble(5, chiTietHoaDon.getTongThanhTien());
+            pstm.setDouble(6, chiTietHoaDon.getTongTienCuoi());
 
             n = pstm.executeUpdate();
+
+
         } catch (Exception e) {
-            // Kiểm tra lỗi Violation of PRIMARY KEY constraint
-            if (e.getMessage().contains("Violation of PRIMARY KEY constraint")) {
-                JOptionPane.showMessageDialog(null, "Lỗi: phiếu đặt này đã được tạo hóa đơn");
-            } else {
-                // Xử lý các lỗi SQL khác
+
                 e.printStackTrace();
-            }
         }
         return n > 0;
     }

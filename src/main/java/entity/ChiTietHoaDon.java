@@ -95,6 +95,17 @@ public class ChiTietHoaDon {
         this.tongTienCuoi = tongTienCuoi;
     }
 
+    public ChiTietHoaDon(HoaDon hoaDon, PhieuDatBan phieuDatBan, KhuyenMai khuyenMai, Thue thue,
+                         Double tongThanhTien, Double tongTienCuoi) {
+
+        this.hoaDon = hoaDon;
+        this.phieuDatBan = phieuDatBan;
+        this.khuyenMai = khuyenMai;
+        this.thue = thue;
+        this.tongThanhTien = tongThanhTien;
+        this.tongTienCuoi = tongTienCuoi;
+    }
+
 
     public ChiTietHoaDon() {
         super();
