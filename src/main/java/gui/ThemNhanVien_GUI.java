@@ -225,7 +225,17 @@ public class ThemNhanVien_GUI extends JFrame implements ActionListener, MouseLis
         mniThongTinTaiKhoan.setFont(fontMenuItem);
         mniDangXuat = new JMenuItem("Đăng xuất");
         mniDangXuat.setFont(fontMenuItem);
+
+        JMenuItem mniThongKeDoanhThuTheoCa = new JMenuItem(("Thống kê doanh thu theo ca"));
+        mniThongKeDoanhThuTheoCa.setFont(fontMenuItem);
+        mniThongKeDoanhThuTheoCa.addActionListener(e->{
+            ThongKeDoanhThuTheoCaGUI tkNew = new ThongKeDoanhThuTheoCaGUI(taiKhoan.getNhanVien());
+            tkNew.setVisible(true);
+            this.dispose();
+        });
         mnuTaiKhoan.add(mniThongKeDoanhThu);
+        mnuTaiKhoan.addSeparator();
+        mnuTaiKhoan.add(mniThongKeDoanhThuTheoCa);
         mnuTaiKhoan.addSeparator();
         mnuTaiKhoan.add(mniThemNhanVien);
         mnuTaiKhoan.addSeparator();
@@ -463,11 +473,14 @@ public class ThemNhanVien_GUI extends JFrame implements ActionListener, MouseLis
     public void actionPerformed(ActionEvent e) {
         Object o = e.getSource();
         if (o.equals(mniDatBan)) {
+            new FormManHinhChinh(taiKhoan.getNhanVien()).setVisible(true);
             this.dispose();
         } else if (o.equals(mniDSPhieuDatBan)) {
+            new FormPhieuDatBan(taiKhoan.getNhanVien()).setVisible(true);
             this.dispose();
         } else if (o.equals(mniTimKiemPhieuDatBan)) {
-
+            new FormPhieuDatBan(taiKhoan.getNhanVien()).setVisible(true);
+            this.dispose();
         } else if (o.equals(mniXuatHoaDon)) {
             this.dispose();
             new XuatHoaDon_GUI(taiKhoan);
@@ -475,19 +488,25 @@ public class ThemNhanVien_GUI extends JFrame implements ActionListener, MouseLis
             this.dispose();
             new DanhSachHoaDon_GUI(taiKhoan);
         } else if (o.equals(mniDSKhuyenMai)) {
+            new KhuyenMaiGUI(taiKhoan.getNhanVien()).setVisible(true);
             this.dispose();
         } else if (o.equals(mniThemKhuyenMai)) {
+            new KhuyenMaiGUI(taiKhoan.getNhanVien()).setVisible(true);
             this.dispose();
         } else if (o.equals(mnuKhachHang)) {
-
+            new KhachHangGUI(taiKhoan.getNhanVien()).setVisible(true);
+            this.dispose();
         } else if (o.equals(mnuBan)) {
 
         } else if (o.equals(mniDSMonAn)) {
-
+            new MonAnGUI(taiKhoan.getNhanVien()).setVisible(true);
+            this.dispose();
         } else if (o.equals(mniThemMonAn)) {
-
+            new MonAnGUI(taiKhoan.getNhanVien()).setVisible(true);
+            this.dispose();
         } else if (o.equals(mniThongKeDoanhThu)) {
-
+            new ThongKeDoanhThuGUI(taiKhoan.getNhanVien()).setVisible(true);
+            this.dispose();
         } else if (o.equals(mniThemNhanVien)) {
             this.dispose();
             new ThemNhanVien_GUI(taiKhoan);
@@ -498,8 +517,14 @@ public class ThemNhanVien_GUI extends JFrame implements ActionListener, MouseLis
             this.dispose();
             new ThongTinTaiKhoan_GUI(taiKhoan);
         } else if (o.equals(mniDangXuat)) {
-            this.dispose();
-            new DangNhap_GUI();
+            int response = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn đăng xuất?", "Xác nhận đăng xuất",
+                    JOptionPane.YES_NO_OPTION);
+
+            if (response == JOptionPane.YES_OPTION) {
+                this.dispose();
+                DangNhap_GUI dangNhap_GUI = new DangNhap_GUI();
+                dangNhap_GUI.setVisible(true);
+            }
         }
         /// Các chức năng
         else if (o.equals(btnThem)) {

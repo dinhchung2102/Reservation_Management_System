@@ -182,7 +182,17 @@ public class ThongTinTaiKhoan_GUI extends JFrame implements ActionListener {
 		mniThongTinTaiKhoan.setFont(fontMenuItem);
 		mniDangXuat = new JMenuItem("Đăng xuất");
 		mniDangXuat.setFont(fontMenuItem);
+
+		JMenuItem mniThongKeDoanhThuTheoCa = new JMenuItem(("Thống kê doanh thu theo ca"));
+		mniThongKeDoanhThuTheoCa.setFont(fontMenuItem);
+		mniThongKeDoanhThuTheoCa.addActionListener(e->{
+			ThongKeDoanhThuTheoCaGUI tkNew = new ThongKeDoanhThuTheoCaGUI(taiKhoan.getNhanVien());
+			tkNew.setVisible(true);
+			this.dispose();
+		});
 		mnuTaiKhoan.add(mniThongKeDoanhThu);
+		mnuTaiKhoan.addSeparator();
+		mnuTaiKhoan.add(mniThongKeDoanhThuTheoCa);
 		mnuTaiKhoan.addSeparator();
 		mnuTaiKhoan.add(mniThemNhanVien);
 		mnuTaiKhoan.addSeparator();

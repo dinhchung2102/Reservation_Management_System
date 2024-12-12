@@ -251,7 +251,16 @@ public class XuatHoaDon_GUI extends JFrame implements ActionListener {
         mniThongTinTaiKhoan.setFont(fontMenuItem);
         mniDangXuat = new JMenuItem("Đăng xuất");
         mniDangXuat.setFont(fontMenuItem);
+        JMenuItem mniThongKeDoanhThuTheoCa = new JMenuItem(("Thống kê doanh thu theo ca"));
+        mniThongKeDoanhThuTheoCa.setFont(fontMenuItem);
+        mniThongKeDoanhThuTheoCa.addActionListener(e->{
+            ThongKeDoanhThuTheoCaGUI tkNew = new ThongKeDoanhThuTheoCaGUI(taiKhoan.getNhanVien());
+            tkNew.setVisible(true);
+            this.dispose();
+        });
         mnuTaiKhoan.add(mniThongKeDoanhThu);
+        mnuTaiKhoan.addSeparator();
+        mnuTaiKhoan.add(mniThongKeDoanhThuTheoCa);
         mnuTaiKhoan.addSeparator();
         mnuTaiKhoan.add(mniThemNhanVien);
         mnuTaiKhoan.addSeparator();
@@ -574,8 +583,9 @@ public class XuatHoaDon_GUI extends JFrame implements ActionListener {
         } else if (o.equals(mnuKhachHang)) {
             new KhachHangGUI(taiKhoan.getNhanVien()).setVisible(true);
             this.dispose();
-        } else if (o.equals(mnuBan)) {
-
+        } else if (o.equals(mniQuanLiBan)) {
+                new DanhSachBanGUI(taiKhoan.getNhanVien()).setVisible(true);
+                this.dispose();
         } else if (o.equals(mniDSMonAn)) {
             new MonAnGUI(taiKhoan.getNhanVien()).setVisible(true);
             this.dispose();
@@ -625,11 +635,13 @@ public class XuatHoaDon_GUI extends JFrame implements ActionListener {
                     int maHD =  hoaDon.getMaHoaDon();
                     ChiTietHoaDon chiTietHoaDon = new ChiTietHoaDon(new HoaDon_DAO().getHoaDonTheoMa(maHD), phieuDatBan, khuyenMai, thue_DAO.getThueTheoMa(1), tongTien, tongTienCuoi);
                     new ChiTietHoaDon_DAO().themChiTietHoaDon(chiTietHoaDon);
+
                     new PhieuDatBan_DAO().capNhatTrangThaiByMaPhieu(chiTietHoaDon.getPhieuDatBan().getMaPhieuDatBan(), "Đã sử dụng");
                     JOptionPane.showMessageDialog(this, "ĐÃ TẠO HÓA ĐƠN");
                     new DAO_Ban().capNhatTrangThaiBanById(phieuDatBan.getBan().getMaBan(), false);
                     new FormManHinhChinh(taiKhoan.getNhanVien()).setVisible(true);
                     this.dispose();
+
                 }
             }
 

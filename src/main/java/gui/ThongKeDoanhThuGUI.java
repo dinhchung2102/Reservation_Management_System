@@ -196,7 +196,17 @@ public class ThongKeDoanhThuGUI extends JFrame {
         mniThongTinTaiKhoan.setFont(fontMenuItem);
         mniDangXuat = new JMenuItem("Đăng xuất");
         mniDangXuat.setFont(fontMenuItem);
+
+        JMenuItem mniThongKeDoanhThuTheoCa = new JMenuItem(("Thống kê doanh thu theo ca"));
+        mniThongKeDoanhThuTheoCa.setFont(fontMenuItem);
+        mniThongKeDoanhThuTheoCa.addActionListener(e->{
+            ThongKeDoanhThuTheoCaGUI tkNew = new ThongKeDoanhThuTheoCaGUI(nhanVien);
+            tkNew.setVisible(true);
+            this.dispose();
+        });
         mnuTaiKhoan.add(mniThongKeDoanhThu);
+        mnuTaiKhoan.addSeparator();
+        mnuTaiKhoan.add(mniThongKeDoanhThuTheoCa);
         mnuTaiKhoan.addSeparator();
         mnuTaiKhoan.add(mniThemNhanVien);
         mnuTaiKhoan.addSeparator();

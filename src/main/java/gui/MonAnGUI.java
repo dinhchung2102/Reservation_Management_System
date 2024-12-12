@@ -1,6 +1,7 @@
 package gui;
 
 import dao.MonAnDAO;
+import dao.TaiKhoan_DAO;
 import entity.MonAn;
 import entity.NhanVien;
 
@@ -133,6 +134,14 @@ public class MonAnGUI extends JFrame {
 		mniXuatHoaDon.setFont(fontMenuItem);
 		mniDSHoaDon = new JMenuItem("Danh sách hóa đơn");
 		mniDSHoaDon.setFont(fontMenuItem);
+        mniXuatHoaDon.addActionListener(e->{
+            new XuatHoaDon_GUI(new TaiKhoan_DAO().getTaiKhoanByMaNhanVien(nhanVien.getMaNV())).setVisible(true);
+            this.dispose();
+        });
+        mniDSHoaDon.addActionListener(e->{
+            new DanhSachHoaDon_GUI(new TaiKhoan_DAO().getTaiKhoanByMaNhanVien(nhanVien.getMaNV())).setVisible(true);
+            this.dispose();
+        });
 		mnuHoaDon.add(mniXuatHoaDon);
 		mnuHoaDon.addSeparator();
 		mnuHoaDon.add(mniDSHoaDon);
@@ -219,8 +228,18 @@ public class MonAnGUI extends JFrame {
 		mniThongTinTaiKhoan.setFont(fontMenuItem);
 		mniDangXuat = new JMenuItem("Đăng xuất");
 		mniDangXuat.setFont(fontMenuItem);
+
+        JMenuItem mniThongKeDoanhThuTheoCa = new JMenuItem(("Thống kê doanh thu theo ca"));
+        mniThongKeDoanhThuTheoCa.setFont(fontMenuItem);
+        mniThongKeDoanhThuTheoCa.addActionListener(e->{
+            ThongKeDoanhThuTheoCaGUI tkNew = new ThongKeDoanhThuTheoCaGUI(nhanVien);
+            tkNew.setVisible(true);
+            this.dispose();
+        });
 		mnuTaiKhoan.add(mniThongKeDoanhThu);
 		mnuTaiKhoan.addSeparator();
+        mnuTaiKhoan.add(mniThongKeDoanhThuTheoCa);
+        mnuTaiKhoan.addSeparator();
 		mnuTaiKhoan.add(mniThemNhanVien);
 		mnuTaiKhoan.addSeparator();
 		mnuTaiKhoan.add(mniTaoTaiKhoan);

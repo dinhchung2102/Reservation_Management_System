@@ -188,6 +188,15 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
             new ThongKeDoanhThuGUI(nhanVien).setVisible(true);
             this.dispose();
         });
+        JMenuItem mniThongKeDoanhThuTheoCa = new JMenuItem(("Thống kê doanh thu theo ca"));
+        mniThongKeDoanhThuTheoCa.setFont(fontMenuItem);
+        mniThongKeDoanhThuTheoCa.addActionListener(e->{
+            ThongKeDoanhThuTheoCaGUI tkNew = new ThongKeDoanhThuTheoCaGUI(nhanVien);
+            tkNew.setVisible(true);
+            this.dispose();
+        });
+
+
         JMenuItem mniThemNhanVien = new JMenuItem("Thêm nhân viên");
         mniThemNhanVien.setFont(fontMenuItem);
         JMenuItem mniTaoTaiKhoan = new JMenuItem("Tạo tài khoản");
@@ -196,7 +205,16 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
         mniThongTinTaiKhoan.setFont(fontMenuItem);
         mniDangXuat = new JMenuItem("Đăng xuất");
         mniDangXuat.setFont(fontMenuItem);
+        mniThongKeDoanhThuTheoCa = new JMenuItem(("Thống kê doanh thu theo ca"));
+        mniThongKeDoanhThuTheoCa.setFont(fontMenuItem);
+        mniThongKeDoanhThuTheoCa.addActionListener(e->{
+            ThongKeDoanhThuTheoCaGUI tkNew = new ThongKeDoanhThuTheoCaGUI(nhanVien);
+            tkNew.setVisible(true);
+            this.dispose();
+        });
         mnuTaiKhoan.add(mniThongKeDoanhThu);
+        mnuTaiKhoan.addSeparator();
+        mnuTaiKhoan.add(mniThongKeDoanhThuTheoCa);
         mnuTaiKhoan.addSeparator();
         mnuTaiKhoan.add(mniThemNhanVien);
         mnuTaiKhoan.addSeparator();
@@ -205,6 +223,7 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
         mnuTaiKhoan.add(mniThongTinTaiKhoan);
         mnuTaiKhoan.addSeparator();
         mnuTaiKhoan.add(mniDangXuat);
+
 
         mniThongKeDoanhThu.addActionListener(this);
         mniThongTinTaiKhoan.addActionListener(this);
@@ -593,7 +612,7 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
         btnSuDung.addActionListener(e->{
             PhieuDatBan phieuDatBan = new PhieuDatBan_DAO().getPhieuDatBanTheoMa(Integer.parseInt(txtMaPhieu.getText()));
             new DAO_Ban().capNhatTrangThaiBanById(phieuDatBan.getBan().getMaBan(), true);
-            new PhieuDatBan_DAO().capNhatTrangThaiByMaPhieu(Integer.parseInt(txtMaPhieu.getText()), "Đã sử dụng");
+            new PhieuDatBan_DAO().capNhatTrangThaiByMaPhieu(Integer.parseInt(txtMaPhieu.getText()), "Đang sử dụng");
             this.dispose();
             FormManHinhChinh formManHinhChinh = new FormManHinhChinh(nhanVien);
             formManHinhChinh.setVisible(true);

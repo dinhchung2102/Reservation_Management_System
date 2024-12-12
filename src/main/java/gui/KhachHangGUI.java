@@ -201,6 +201,10 @@ public class KhachHangGUI extends JFrame{
         mnuBan.setFont(fontMenu);
         mniQuanLiBan = new JMenuItem("Quản lí bàn");
         mniQuanLiBan.setFont(fontMenuItem);
+        mniQuanLiBan.addActionListener(e->{
+            new DanhSachBanGUI(nhanVien).setVisible(true);
+            this.dispose();
+        });
         mnuBan.add(mniQuanLiBan);
 
 //		mniQuanLiBan.addActionListener(this);
@@ -241,6 +245,10 @@ public class KhachHangGUI extends JFrame{
         mniThongKeDoanhThu.setFont(fontMenuItem);
         mniThemNhanVien = new JMenuItem("Thêm nhân viên");
         mniThemNhanVien.setFont(fontMenuItem);
+        mniThemNhanVien.addActionListener(e->{
+            new ThemNhanVien_GUI(new TaiKhoan_DAO().getTaiKhoanByMaNhanVien(nhanVien.getMaNV())).setVisible(true);
+            this.dispose();
+        });
         mniTaoTaiKhoan = new JMenuItem("Tạo tài khoản");
         mniTaoTaiKhoan.setFont(fontMenuItem);
         mniTaoTaiKhoan.addActionListener(e->{
@@ -253,9 +261,18 @@ public class KhachHangGUI extends JFrame{
             new ThongTinTaiKhoan_GUI(new TaiKhoan_DAO().getTaiKhoanByMaNhanVien(nhanVien.getMaNV())).setVisible(true);
             this.dispose();
         });
+        JMenuItem mniThongKeDoanhThuTheoCa = new JMenuItem(("Thống kê doanh thu theo ca"));
+        mniThongKeDoanhThuTheoCa.setFont(fontMenuItem);
+        mniThongKeDoanhThuTheoCa.addActionListener(e->{
+            ThongKeDoanhThuTheoCaGUI tkNew = new ThongKeDoanhThuTheoCaGUI(nhanVien);
+            tkNew.setVisible(true);
+            this.dispose();
+        });
         mniDangXuat = new JMenuItem("Đăng xuất");
         mniDangXuat.setFont(fontMenuItem);
         mnuTaiKhoan.add(mniThongKeDoanhThu);
+        mnuTaiKhoan.addSeparator();
+        mnuTaiKhoan.add(mniThongKeDoanhThuTheoCa);
         mnuTaiKhoan.addSeparator();
         mnuTaiKhoan.add(mniThemNhanVien);
         mnuTaiKhoan.addSeparator();

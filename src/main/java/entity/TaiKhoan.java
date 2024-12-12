@@ -39,7 +39,25 @@ public class TaiKhoan {
     }
 
     public Object[] getObjTaiKhoan() {
-        Object[] x = { getTenDangNhap(), getMatKhau(), getLoaiTaiKhoan(), getNhanVien().getMaNV(), getNhanVien().getTenNV()};
+        Object[] x;
+        if (getNhanVien() != null) {
+            x = new Object[] {
+                    getTenDangNhap(),
+                    getMatKhau(),
+                    getLoaiTaiKhoan(),
+                    getNhanVien().getMaNV(),
+                    getNhanVien().getTenNV()
+            };
+        } else {
+            x = new Object[] {
+                    getTenDangNhap(),
+                    getMatKhau(),
+                    getLoaiTaiKhoan(),
+                    null, // Nếu nhanVien là null, trả về null
+                    null  // Nếu nhanVien là null, trả về null
+            };
+        }
         return x;
     }
+
 }

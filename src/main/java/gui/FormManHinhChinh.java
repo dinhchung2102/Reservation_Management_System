@@ -82,8 +82,8 @@ public class FormManHinhChinh extends JFrame implements ActionListener {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
 
-        /*
 
+        /*
 
 
          FORM MENU CREATED BY PHAM VAN
@@ -500,6 +500,7 @@ public class FormManHinhChinh extends JFrame implements ActionListener {
 				System.out.print("\nXuất hóa đơn");
 				XuatHoaDon_GUI hdGui = new XuatHoaDon_GUI(new TaiKhoan_DAO().getTaiKhoanByMaNhanVien(nhanVien.getMaNV()), new PhieuDatBan_DAO().getPhieuDatBanTheoMaBan(id).getMaPhieuDatBan());
 				hdGui.setVisible(true);
+				this.dispose();
 			});
 			
 		}

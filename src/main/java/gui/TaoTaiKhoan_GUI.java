@@ -252,15 +252,15 @@ public class TaoTaiKhoan_GUI extends JFrame implements ActionListener, MouseList
 
         // Giao diện
         // Tạo font
-        Font font = new Font("Times New Roman", 1, 30);
+        Font font = new Font("Times New Roman", 1, 25);
         // Sử dụng Map để thêm thuộc tính gạch chân
         Map<TextAttribute, Object> attributes = (Map<TextAttribute, Object>) font.getAttributes();
         attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
         // Áp dụng font với gạch chân
         fontTieuDe = new Font(attributes);
 
-        fontGiaoDien = new Font(Font.SERIF, Font.PLAIN, 25);
-        fontGiaoDienInDam = new Font(Font.SERIF, Font.BOLD, 25);
+        fontGiaoDien = new Font(Font.SERIF, Font.PLAIN, 20);
+        fontGiaoDienInDam = new Font(Font.SERIF, Font.BOLD, 20);
 
         // JPanel tiêu đề
         pnlTieuDe = new JPanel();
@@ -367,7 +367,7 @@ public class TaoTaiKhoan_GUI extends JFrame implements ActionListener, MouseList
         tblDanhSachTaiKhoan.setRowHeight(40);
         tblDanhSachTaiKhoan.getTableHeader().setFont(new Font(Font.SERIF, Font.BOLD, 18));
         scrDanhSachTaiKhoan = new JScrollPane(tblDanhSachTaiKhoan);
-        scrDanhSachTaiKhoan.setPreferredSize(new Dimension(1500, 600));
+        scrDanhSachTaiKhoan.setPreferredSize(new Dimension(1500, 400));
         pnlDanhSachTaiKhoan.add(scrDanhSachTaiKhoan, BorderLayout.CENTER);
 
         tblDanhSachTaiKhoan.addMouseListener(this);
