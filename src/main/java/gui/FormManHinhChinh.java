@@ -175,6 +175,10 @@ public class FormManHinhChinh extends JFrame implements ActionListener {
 		mnuBan.setFont(fontMenu);
         JMenuItem mniQuanLiBan = new JMenuItem("Quản lí bàn");
 		mniQuanLiBan.setFont(fontMenuItem);
+		mniQuanLiBan.addActionListener(e->{
+			new DanhSachBanGUI(nhanVien).setVisible(true);
+			this.dispose();
+		});
 		mnuBan.add(mniQuanLiBan);
 
 		mniQuanLiBan.addActionListener(this);
@@ -215,6 +219,10 @@ public class FormManHinhChinh extends JFrame implements ActionListener {
 		});
         JMenuItem mniThemNhanVien = new JMenuItem("Thêm nhân viên");
 		mniThemNhanVien.setFont(fontMenuItem);
+		mniThemNhanVien.addActionListener(e->{
+			new ThemNhanVien_GUI(new TaiKhoan_DAO().getTaiKhoanByMaNhanVien(nhanVien.getMaNV()));
+			this.dispose();
+		});
         JMenuItem mniTaoTaiKhoan = new JMenuItem("Tạo tài khoản");
 		mniTaoTaiKhoan.setFont(fontMenuItem);
 		mniThongTinTaiKhoan = new JMenuItem("Thông tin tài khoản");
@@ -267,7 +275,7 @@ public class FormManHinhChinh extends JFrame implements ActionListener {
          */
 
 		this.nhanVien = nhanVien;
-		mnuTaiKhoan.setText(nhanVien.getTenNV());
+		mnuTaiKhoan.setText("NV: " + nhanVien.getTenNV());
 		Color backgroundColor = Color.white;
 
 		// ==================== PANEL TẠO SƠ ĐỒ BÀN ===================
@@ -310,7 +318,7 @@ public class FormManHinhChinh extends JFrame implements ActionListener {
 
 		pnlChucNang.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 10));
 
-        JButton btnLocBanTrong = new JButton("LỌC BÀN TRỐNG");
+        JButton btnLocBanTrong = new JButton("Sơ đồ bàn");
 
 		pnlChucNang.add(btnLocBanTrong);
 		pnlChucNang.setBackground(backgroundColor);
@@ -487,7 +495,6 @@ public class FormManHinhChinh extends JFrame implements ActionListener {
 				System.out.print("\nDat Mon");
 				PhieuDatMonGui newGui = new PhieuDatMonGui();
 				newGui.setVisible(true);
-				this.dispose();
 			});
 			btnXuatHD.addActionListener(e->{
 				System.out.print("\nXuất hóa đơn");

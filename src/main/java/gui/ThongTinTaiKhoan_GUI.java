@@ -10,14 +10,7 @@ import java.awt.event.ActionListener;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.border.LineBorder;
 
 import dao.NhanVien_DAO;
@@ -85,9 +78,9 @@ public class ThongTinTaiKhoan_GUI extends JFrame implements ActionListener {
 		setTitle("CHƯƠNG TRÌNH QUẢN LÍ ĐẶT BÀN TRONG NHÀ HÀNG");
 
 		// tạo font cho JMenu
-		fontMenu = new Font(Font.SERIF, Font.BOLD, 30);
+		fontMenu = new Font(Font.SERIF, Font.BOLD, 25);
 		// tạo font cho JMenuItem
-		fontMenuItem = new Font(Font.SERIF, Font.PLAIN, 30);
+		fontMenuItem = new Font(Font.SERIF, Font.PLAIN, 25);
 
 		// Tạo menubar
 		mnuMenuBar = new JMenuBar();
@@ -293,43 +286,63 @@ public class ThongTinTaiKhoan_GUI extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		Object o = e.getSource();
 		if (o.equals(mniDatBan)) {
+			FormManHinhChinh newFrm = new FormManHinhChinh(taiKhoan.getNhanVien());
+			newFrm.setVisible(true);
 			this.dispose();
-			new FormManHinhChinh(taiKhoan.getNhanVien());
 		} else if (o.equals(mniDSPhieuDatBan)) {
+			FormPhieuDatBan newFrm = new FormPhieuDatBan(taiKhoan.getNhanVien());
+			newFrm.setVisible(true);
 			this.dispose();
 		} else if (o.equals(mniTimKiemPhieuDatBan)) {
-
+			FormPhieuDatBan newFrm = new FormPhieuDatBan(taiKhoan.getNhanVien());
+			newFrm.setVisible(true);
+			this.dispose();
 		} else if (o.equals(mniXuatHoaDon)) {
+			new XuatHoaDon_GUI(taiKhoan).setVisible(true);
 			this.dispose();
-			new XuatHoaDon_GUI(taiKhoan);
 		} else if (o.equals(mniDSHoaDon)) {
+			new DanhSachHoaDon_GUI(taiKhoan).setVisible(true);
 			this.dispose();
-			new DanhSachHoaDon_GUI(taiKhoan);
 		} else if (o.equals(mniDSKhuyenMai)) {
+			new KhuyenMaiGUI(taiKhoan.getNhanVien()).setVisible(true);
 			this.dispose();
-			new KhuyenMaiGUI(new NhanVien_DAO().getNhanVienTheoMa(taiKhoan.getNhanVien().getMaNV()));
 		} else if (o.equals(mniThemKhuyenMai)) {
+			new KhuyenMaiGUI(taiKhoan.getNhanVien()).setVisible(true);
 			this.dispose();
 		} else if (o.equals(mnuKhachHang)) {
-
+			new KhachHangGUI(taiKhoan.getNhanVien()).setVisible(true);
+			this.dispose();
 		} else if (o.equals(mnuBan)) {
 
 		} else if (o.equals(mniDSMonAn)) {
-
+			new MonAnGUI(taiKhoan.getNhanVien()).setVisible(true);
+			this.dispose();
 		} else if (o.equals(mniThemMonAn)) {
-
+			new MonAnGUI(taiKhoan.getNhanVien()).setVisible(true);
+			this.dispose();
 		} else if (o.equals(mniThongKeDoanhThu)) {
-
+			new ThongKeDoanhThuGUI(taiKhoan.getNhanVien()).setVisible(true);
+			this.dispose();
 		} else if (o.equals(mniThemNhanVien)) {
 			this.dispose();
 		} else if (o.equals(mniTaoTaiKhoan)) {
+			new TaoTaiKhoan_GUI(taiKhoan).setVisible(true);
 			this.dispose();
 		} else if (o.equals(mniThongTinTaiKhoan)) {
 			this.dispose();
-			new ThongTinTaiKhoan_GUI(taiKhoan);
+			new ThongTinTaiKhoan_GUI(taiKhoan).setVisible(true);
 		} else if (o.equals(mniDangXuat)) {
-			this.dispose();
-			new DangNhap_GUI();
+			int response = JOptionPane.showConfirmDialog(this,
+					"Bạn có chắc chắn muốn đăng xuất?",
+					"Xác nhận đăng xuất",
+					JOptionPane.YES_NO_OPTION);
+
+			if (response == JOptionPane.YES_OPTION) {
+				this.dispose();
+				DangNhap_GUI dangNhap_GUI = new DangNhap_GUI();
+				dangNhap_GUI.setVisible(true);
+			}
 		}
+
 	}
 }

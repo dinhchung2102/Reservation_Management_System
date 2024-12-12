@@ -10,6 +10,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.List;
 
 import connectDB.ConnectDB;
 import entity.Ban;
@@ -240,5 +241,45 @@ public class PhieuDatBan_DAO {
 		}
 		return phieuDatBan;
 	}
+
+	public List<PhieuDatBan> getPhieuDatBanTheoMaNV(int maNV) {
+		List<PhieuDatBan> phieuDatBanList = new ArrayList<>();  // Khởi tạo danh sách chứa các PhieuDatBan
+
+		Connection con = ConnectDB.getConnection();
+		String query = "SELECT * FROM PhieuDatBan WHERE maNV = ?";  // Truy vấn dữ liệu theo mã nhân viên
+
+		try {
+			PreparedStatement pstm = con.prepareStatement(query);
+			pstm.setInt(1, maNV);  // Gán mã nhân viên vào tham số
+			ResultSet rs = pstm.executeQuery();  // Thực thi truy vấn và lấy kết quả
+
+			// Lặp qua các kết quả trong ResultSet
+			while (rs.next()) {
+				int maPhieuDatBan = rs.getInt("maPhieuDatBan");
+				Timestamp timestampNgayTaoPhieu = rs.getTimestamp("ngayTaoPhieu");
+				LocalDateTime ngayTaoPhieu = timestampNgayTaoPhieu.toLocalDateTime();
+				Timestamp timestampThoiGianDatBan = rs.getTimestamp("thoiGianDatBan");
+				LocalDateTime thoiGianDatBan = timestampThoiGianDatBan.toLocalDateTime();
+				int soLuongKhach = rs.getInt("soLuongKhach");
+				float tienCoc = rs.getFloat("tienCoc");
+				String trangThai = rs.getString("trangThai");
+
+				// Giả sử bạn đã có các đối tượng DAO cho KhachHang, NhanVien và Ban
+				KhachHang khachHang = khachHang_DAO.getKhachHangTheoMa(rs.getInt("maKH"));
+				NhanVien nhanVien = nhanVien_DAO.getNhanVienTheoMa(rs.getInt("maNV"));
+				Ban ban = ban_DAO.getBanById(rs.getInt("maBan"));
+
+				// Tạo đối tượng PhieuDatBan và thêm vào danh sách
+				PhieuDatBan phieuDatBan = new PhieuDatBan(maPhieuDatBan, ngayTaoPhieu, thoiGianDatBan, soLuongKhach, tienCoc, trangThai, khachHang, nhanVien, ban);
+				phieuDatBanList.add(phieuDatBan);  // Thêm đối tượng vào danh sách
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return phieuDatBanList;  // Trả về danh sách các PhieuDatBan
+	}
+
 
 }

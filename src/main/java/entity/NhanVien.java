@@ -62,7 +62,19 @@ public class NhanVien {
         this.email = email;
         this.diaChi = diaChi;
     }
+    public NhanVien(String tenNV, String gioiTinh, Date ngaySinh, String soDT, String email, String diaChi) {
+        this.tenNV = tenNV;
+        this.gioiTinh = gioiTinh;
+        this.ngaySinh = ngaySinh;
+        this.soDT = soDT;
+        this.email = email;
+        this.diaChi = diaChi;
+    }
     public NhanVien() {
+    }
+    public Object[] getObjNhanVien() {
+        Object[] x = { getMaNV(),getTenNV(), getGioiTinh(), getNgaySinh(), getSoDT(), getEmail(), getDiaChi()};
+        return x;
     }
 
 }

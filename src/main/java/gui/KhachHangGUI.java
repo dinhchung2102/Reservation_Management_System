@@ -88,8 +88,7 @@ public class KhachHangGUI extends JFrame{
          * T//////////////////////////////////////////////////////////////////////////////////////////////
          *
          */
-        mnuKhachHang.setOpaque(true);
-        mnuKhachHang.setBackground(Color.GREEN);
+
         // tạo font cho JMenu
         fontMenu = new Font(Font.SERIF, Font.BOLD, 25);
         // tạo font cho JMenuItem
@@ -267,6 +266,8 @@ public class KhachHangGUI extends JFrame{
         mnuTaiKhoan.add(mniDangXuat);
         mnuTaiKhoan.setText(nhanVien.getTenNV());
 
+        mnuKhachHang.setOpaque(true);
+        mnuKhachHang.setBackground(Color.GREEN);
 
         mniDangXuat.addActionListener(e -> {
             int response = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn đăng xuất?", "Xác nhận đăng xuất",

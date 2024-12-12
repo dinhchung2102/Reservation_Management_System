@@ -201,17 +201,13 @@ public class FormMenu extends JFrame implements ActionListener{
 	public FormMenu(TaiKhoan tk) {
 		this();
 		this.taiKhoan = tk;
-		mnuTaiKhoan.setText("Nhân viên: " + taiKhoan.getNhanVien().getTenNV());
+		mnuTaiKhoan.setText(taiKhoan.getLoaiTaiKhoan() + taiKhoan.getNhanVien().getTenNV());
 	}
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object o = e.getSource();
-		if (o.equals(mnuDatBan)) {
-//			dispose();
-//			
-//			FormManHinhChinh newFrmManHinhChinh = new FormManHinhChinh();
-//			newFrmManHinhChinh.setVisible(true);
+		if (o.equals(mniTimKiemPhieuDatBan)) {
 			
 		}
 		else if (o.equals(mniDSPhieuDatBan)) {

@@ -6,12 +6,20 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import connectDB.ConnectDB;
+import dao.ChiTietHoaDon_DAO;
+import dao.HoaDon_DAO;
+import dao.PhieuDatBan_DAO;
+import entity.ChiTietHoaDon;
+import entity.HoaDon;
 import entity.NhanVien;
+import entity.PhieuDatBan;
 
 public class ThongKeDoanhThuTheoCaGUI extends JFrame {
     private static final long serialVersionUID = 1L;
@@ -298,11 +306,11 @@ public class ThongKeDoanhThuTheoCaGUI extends JFrame {
         JPanel titlePanel = new JPanel();
         titlePanel.setBackground(new Color(240, 240, 240));
         
-        titleLabel = new JLabel("THỐNG KÊ DOANH THU THEO CA", JLabel.CENTER);
+        titleLabel = new JLabel("THỐNG KÊ DOANH THU THEO NHÂN VIÊN", JLabel.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 28));
         titleLabel.setForeground(new Color(0, 51, 102));
         
-        JLabel employeeLabel = new JLabel("Nhân viên: " + currentUser + " (Ca Sáng: 07:00 - 11:00)", JLabel.CENTER);
+        JLabel employeeLabel = new JLabel("Nhân viên: " + nhanVien.getTenNV() , JLabel.CENTER);
         employeeLabel.setFont(new Font("Arial", Font.BOLD, 16));
         employeeLabel.setForeground(new Color(51, 51, 51));
         
@@ -317,15 +325,15 @@ public class ThongKeDoanhThuTheoCaGUI extends JFrame {
         JPanel summaryPanel = new JPanel(new GridLayout(1, 3, 20, 0));
         summaryPanel.setBackground(new Color(240, 240, 240));
         summaryPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
-        
-        totalRevenueLabel = createInfoPanel("Tổng doanh thu", "0 VNĐ");
-        totalShiftsLabel = createInfoPanel("Tổng số ca làm", "0 ca");
-        avgRevenueLabel = createInfoPanel("Doanh thu trung bình/ca", "0 VNĐ");
-        
+
+        totalRevenueLabel = createInfoPanel("", "0 VdđNĐ");
+        totalShiftsLabel = createInfoPanel("Hôm Nay", "0 ca");
+        avgRevenueLabel = createInfoPanel("Tháng " , "0 VNĐ");
+
         summaryPanel.add(totalRevenueLabel);
         summaryPanel.add(totalShiftsLabel);
         summaryPanel.add(avgRevenueLabel);
-        
+
         return summaryPanel;
     }
     
@@ -345,8 +353,8 @@ public class ThongKeDoanhThuTheoCaGUI extends JFrame {
     
     private void createTable() {
         String[] columnNames = {
-            "STT", "Ngày", "Ca làm việc", "Giờ vào", "Giờ ra", 
-            "Số giờ làm", "Doanh thu ca", "Doanh thu/giờ", "Ghi chú"
+            "STT", "Ngày", "Col3", "Col4", "Col5",
+            "Col6", "Tổng tiền", "Doanh thu/giờ", "Ghi chú"
         };
         
         tableModel = new DefaultTableModel(columnNames, 0) {
@@ -388,84 +396,48 @@ public class ThongKeDoanhThuTheoCaGUI extends JFrame {
         statisticsTable.getColumnModel().getColumn(7).setPreferredWidth(120);
         statisticsTable.getColumnModel().getColumn(8).setPreferredWidth(200);
     }
-    
+
     private void loadDataFromDatabase() {
-        List<ShiftData> shiftDataList = new ArrayList<>();
-        String query = """
-            SELECT 
-                HD.ngayLap AS ngay,
-                'Sáng' AS ca,
-                '07:00' AS gioVao,
-                '11:00' AS gioRa,
-                4 AS soGioLam,
-                SUM(CTHD.thanhTien) AS doanhThu,
-                'Ca làm việc bình thường' AS ghiChu
-            FROM HoaDon HD
-            JOIN ChiTietHoaDon CTHD ON HD.maHD = CTHD.maHD
-            JOIN NhanVien NV ON HD.maNV = NV.maNV
-            WHERE NV.tenNV = ? 
-                AND CAST(HD.ngayLap AS TIME) BETWEEN '07:00' AND '11:00'
-            GROUP BY HD.ngayLap
-            ORDER BY HD.ngayLap DESC
-        """;
-
-        try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
-            
-            pstmt.setString(1, currentUser);
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                ShiftData shift = new ShiftData(
-                    rs.getDate("ngay").toLocalDate(),
-                    rs.getString("ca"),
-                    rs.getString("gioVao"),
-                    rs.getString("gioRa"),
-                    rs.getInt("soGioLam"),
-                    rs.getDouble("doanhThu"),
-                    rs.getString("ghiChu")
-                );
-                shiftDataList.add(shift);
-            }
-
-            if (shiftDataList.isEmpty()) {
-                loadSampleData();
-            } else {
-                updateTableData(shiftDataList);
-            }
-
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this,
-                "Lỗi truy vấn dữ liệu: " + e.getMessage() + "\nHiển thị dữ liệu mẫu thay thế.",
-                "Thông báo",
-                JOptionPane.WARNING_MESSAGE);
-            loadSampleData();
-        }
-    }
-
-    private void loadSampleData() {
+        // Sử dụng dữ liệu mẫu gán cứng
         List<ShiftData> sampleDataList = new ArrayList<>();
         LocalDate currentDate = LocalDate.now();
-        
-        double[] revenues = {
-            2800000, 2100000, 2400000, 1900000, 2000000,
-            2600000, 1800000, 1700000, 2500000, 1600000
-        };
-        
-        for (int i = 0; i < revenues.length; i++) {
+
+        List<Double> revenues = new ArrayList<>();
+        List<LocalDateTime> dateTimeList = new ArrayList<>();
+
+
+
+        List<PhieuDatBan> listPhieuByNV = new PhieuDatBan_DAO().getPhieuDatBanTheoMaNV(nhanVien.getMaNV());
+        for (PhieuDatBan phieuDatBan : listPhieuByNV) {
+            List<ChiTietHoaDon>  listCTHDBymaPhieuDatBan= new ChiTietHoaDon_DAO().getChiTietHoaDonTheoMaPhieuDatBan(phieuDatBan.getMaPhieuDatBan());
+            for (ChiTietHoaDon chiTietHoaDon : listCTHDBymaPhieuDatBan){
+                HoaDon hoaDon = new HoaDon_DAO().getHoaDonTheoMa(chiTietHoaDon.getHoaDon().getMaHoaDon());
+                dateTimeList.add(hoaDon.getThoiGianThanhToan());
+                revenues.add(chiTietHoaDon.getTongTienCuoi());
+            }
+        }
+        List<LocalDate> dateList = new ArrayList<>();
+        for(LocalDateTime lcDT : dateTimeList){
+            dateList.add(lcDT.toLocalDate());
+        }
+
+        int index = 0;
+        for(Double tongTienCuoi : revenues){
             sampleDataList.add(new ShiftData(
-                currentDate.minusDays(i),
-                "Sáng",
-                "07:00",
-                "11:00",
-                4,
-                revenues[i],
-                "Ca làm việc bình thường (Dữ liệu mẫu)"
+                    dateList.get(index),
+                    "Sáng",
+                    "07:00",
+                    "11:00",
+                    4,
+                    tongTienCuoi,
+                    ""
             ));
         }
-        
+
+        // Cập nhật bảng với dữ liệu mẫu
         updateTableData(sampleDataList);
     }
+
 
     private void updateTableData(List<ShiftData> dataList) {
         tableModel.setRowCount(0);
@@ -512,12 +484,12 @@ public class ThongKeDoanhThuTheoCaGUI extends JFrame {
                                 moneyFormat.format(totalRevenue) + " VNĐ</span></div></html>");
         
         totalShiftsLabel.setText("<html><div style='text-align: center'>" +
-                               "<span style='font-size: 16px; color: #666'>Tổng số ca làm</span><br>" +
+                               "<span style='font-size: 16px; color: #666'>Doanh thu hôm nay</span><br>" +
                                "<span style='font-size: 20px; color: #000'>" + 
                                totalShifts + " ca</span></div></html>");
         
         avgRevenueLabel.setText("<html><div style='text-align: center'>" +
-                              "<span style='font-size: 16px; color: #666'>Doanh thu trung bình/ca</span><br>" +
+                              "<span style='font-size: 16px; color: #666'>Doanh thu trung bình/tháng</span><br>" +
                               "<span style='font-size: 20px; color: #000'>" + 
                               moneyFormat.format(avgRevenue) + " VNĐ</span></div></html>");
     }

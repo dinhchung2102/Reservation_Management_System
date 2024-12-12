@@ -134,6 +134,67 @@ public class DAO_Ban {
         }
         return khuVuc;
     }
+    public boolean themBan(Ban ban) {
+        String sql = "INSERT INTO Ban (loaiBan, soGheNgoi, moTa, trangThai, maKhuVuc) VALUES (?, ?, ?, ?, ?)";
+        boolean isInserted = false;
+
+        try (Connection connection = ConnectDB.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setString(1, ban.getLoaiBan());
+            preparedStatement.setInt(2, ban.getSoGheNgoi());
+            preparedStatement.setString(3, ban.getMoTa());
+            preparedStatement.setBoolean(4, ban.isTrangThai());
+            preparedStatement.setInt(5, ban.getKhuVuc().getMaKhuVuc());
+
+            int rowsAffected = preparedStatement.executeUpdate();
+            isInserted = (rowsAffected > 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return isInserted;
+    }
+    public boolean xoaBan(int maBan) {
+        String sql = "DELETE FROM Ban WHERE maBan = ?";
+        boolean isDeleted = false;
+
+        try (Connection connection = ConnectDB.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setInt(1, maBan);
+            int rowsAffected = preparedStatement.executeUpdate();
+            isDeleted = (rowsAffected > 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return isDeleted;
+    }
+
+    public boolean capNhatBan(Ban ban) {
+        String sql = "UPDATE Ban SET loaiBan = ?, soGheNgoi = ?, moTa = ?, trangThai = ?, maKhuVuc = ? WHERE maBan = ?";
+        boolean isUpdated = false;
+
+        try (Connection connection = ConnectDB.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setString(1, ban.getLoaiBan());
+            preparedStatement.setInt(2, ban.getSoGheNgoi());
+            preparedStatement.setString(3, ban.getMoTa());
+            preparedStatement.setBoolean(4, ban.isTrangThai());
+            preparedStatement.setInt(5, ban.getKhuVuc().getMaKhuVuc());
+            preparedStatement.setInt(6, ban.getMaBan());
+
+            int rowsAffected = preparedStatement.executeUpdate();
+            isUpdated = (rowsAffected > 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return isUpdated;
+    }
+
 
 
 }

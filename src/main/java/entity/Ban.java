@@ -20,6 +20,14 @@ public class Ban {
         this.trangThai = trangThai;
         this.khuVuc = khuVuc;
     }
+    public Ban( String loaiBan, int soGheNgoi, String moTa, boolean trangThai, KhuVuc khuVuc) {
+        super();
+        this.loaiBan = loaiBan;
+        this.soGheNgoi = soGheNgoi;
+        this.moTa = moTa;
+        this.trangThai = trangThai;
+        this.khuVuc = khuVuc;
+    }
     public int getMaBan() {
         return maBan;
     }

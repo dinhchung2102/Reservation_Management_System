@@ -115,11 +115,19 @@ public class FormPhieuDatBan extends JFrame implements ActionListener {
         mniXuatHoaDon.setFont(fontMenuItem);
         JMenuItem mniDSHoaDon = new JMenuItem("Danh sách hóa đơn");
         mniDSHoaDon.setFont(fontMenuItem);
+        mniDSHoaDon.addActionListener(e->{
+            new DanhSachHoaDon_GUI(new TaiKhoan_DAO().getTaiKhoanByMaNhanVien(nhanVien.getMaNV())).setVisible(true);
+
+            this.dispose();
+        });
         mnuHoaDon.add(mniXuatHoaDon);
         mnuHoaDon.addSeparator();
         mnuHoaDon.add(mniDSHoaDon);
 
-        mniXuatHoaDon.addActionListener(this);
+        mniXuatHoaDon.addActionListener(e->{
+            new XuatHoaDon_GUI(new TaiKhoan_DAO().getTaiKhoanByMaNhanVien(nhanVien.getMaNV()));
+            this.dispose();
+        });
         mniDSHoaDon.addActionListener(this);
 
         // Tạo menu khuyến mãi
